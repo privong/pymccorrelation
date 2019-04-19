@@ -5,10 +5,9 @@ The original C implementation can be found [here](https://github.com/PACurran/MC
 
 ## Status
 
-The bootstrapping only method has been validated against the original C code, using the provided test data.
-Evaluation using perturbations currently gives different results, compared to the Curran implementation.
-
 The python implementation is currently significantly slower than the original C implementation.
+
+All three modes (bootstrapping only, perturbing only, and composite) have been tested against Curran's code using the test data provided with MCSpearman.
 
 ## Requirements
 

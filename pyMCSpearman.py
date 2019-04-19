@@ -48,8 +48,8 @@ def pyMCSpearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
             xp = x[members]
             yp = y[members]
             if perturb:
-                xp += np.random.normal() * dx[members]
-                yp += np.random.normal() * dy[members]
+                xp += np.random.normal(size=Nvalues) * dx[members]
+                yp += np.random.normal(size=Nvalues) * dy[members]
 
             trho, tpval = spearmanr(xp, yp)
 
@@ -57,8 +57,8 @@ def pyMCSpearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
             pval.append(tpval)
     elif perturb:
         for i in range(Nperturb):
-            xp = x + np.random.normal() * dx
-            yp = y + np.random.normal() * dy
+            xp = x + np.random.normal(size=Nvalues) * dx
+            yp = y + np.random.normal(size=Nvalues) * dy
 
             trho, tpval = spearmanr(xp, yp)
 
