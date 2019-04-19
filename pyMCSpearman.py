@@ -131,4 +131,6 @@ def main():
 
 
 if __name__ == "__main__":
+    import sys
+    sys.stdout.write("\nModule run as a program. Running test suite.\n\n")
     main()
