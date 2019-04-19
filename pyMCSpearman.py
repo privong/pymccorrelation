@@ -12,7 +12,7 @@ from scipy.stats import spearmanr
 def pyMCSpearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
                  bootstrap=True,
                  perturb=True,
-                 percentiles=[16,50,80], return_dist=False):
+                 percentiles=(16, 50, 80), return_dist=False):
     """
     Compute spearman rank coefficient with uncertainties using several methods.
     Arguments:
@@ -66,16 +66,16 @@ def pyMCSpearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
             pval.append(tpval)
     else:
         import warnings
-        warnings.warn("No bootstrapping or perturbation applied. Returning normal spearman rank values.")
-        return spearmanr(x,y)
+        warnings.warn("No bootstrapping or perturbation applied. Returning \
+normal spearman rank values.")
+        return spearmanr(x, y)
 
     frho = np.percentile(rho, percentiles)
     fpval = np.percentile(pval, percentiles)
 
     if return_dist:
         return frho, fpval, rho, pval
-    else:
-        return frho, fpval
+    return frho, fpval
 
 
 def main():
@@ -91,7 +91,7 @@ def main():
                          dtype=[('x', float),
                                 ('dx', float),
                                 ('y', float),
-                                ('dy', float)])  
+                                ('dy', float)])
 
     # spearman only
     res = pyMCSpearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
@@ -99,8 +99,8 @@ def main():
                        perturb=False,
                        return_dist=True)
     print("Spearman only: ")
-    print("\trho=" , res[0])
-    print("\tpval=" , res[1])
+    print("\trho=", res[0])
+    print("\tpval=", res[1])
 
     # bootstrap only
     res = pyMCSpearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
@@ -108,8 +108,8 @@ def main():
                        perturb=False,
                        return_dist=True)
     print("Bootstrap only: ")
-    print("\trho=" , np.mean(res[2]), "+/-", np.std(res[2]))
-    print("\tpval=" , np.mean(res[3]), "+/-", np.std(res[3]))
+    print("\trho=", np.mean(res[2]), "+/-", np.std(res[2]))
+    print("\tpval=", np.mean(res[3]), "+/-", np.std(res[3]))
 
     # perturbation only
     res = pyMCSpearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
@@ -117,17 +117,18 @@ def main():
                        perturb=True,
                        return_dist=True)
     print("Perturbation only: ")
-    print("\trho=" , np.mean(res[2]), "+/-", np.std(res[2]))
-    print("\tpval=" , np.mean(res[3]), "+/-", np.std(res[3]))
+    print("\trho=", np.mean(res[2]), "+/-", np.std(res[2]))
+    print("\tpval=", np.mean(res[3]), "+/-", np.std(res[3]))
 
     # composite method
     res = pyMCSpearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
                        bootstrap=True,
                        perturb=True,
+                       Nperturb=1,
                        return_dist=True)
     print("Bootstrap & Perturbation: ")
-    print("\trho=" , np.mean(res[2]), "+/-", np.std(res[2]))
-    print("\tpval=" , np.mean(res[3]), "+/-", np.std(res[3]))
+    print("\trho=", np.mean(res[2]), "+/-", np.std(res[2]))
+    print("\tpval=", np.mean(res[3]), "+/-", np.std(res[3]))
 
 
 if __name__ == "__main__":
