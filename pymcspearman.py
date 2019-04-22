@@ -6,7 +6,7 @@ errors.
 """
 
 import numpy as _np
-from scipy.stats import _spearmanr
+from scipy.stats import spearmanr as _spearmanr
 
 
 def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
@@ -78,57 +78,87 @@ normal spearman rank values.")
     return frho, fpval
 
 
-def main():
+def run_tests():
     """
-    run tests
+    Test output of pymcspearman against tabulated values from MCSpearman
     """
 
-    import os
+    from tempfile import NamedTemporaryFile as ntf
+    from urllib.request import urlretrieve
 
-    # load test data
-    data = _np.genfromtxt(os.environ['HOME'] + '/astro/software/MCSpearman/test.data',
+    # get test data
+    tfile = ntf()
+    urlretrieve("https://raw.githubusercontent.com/PACurran/MCSpearman/master/test.data",
+                tfile.name)
+    # open temporary file
+    data = _np.genfromtxt(tfile,
                          usecols=(0, 1, 2, 3),
                          dtype=[('x', float),
                                 ('dx', float),
                                 ('y', float),
                                 ('dy', float)])
 
+    # tabulated results from a MCSpearman run with 10000 iterations
+    MCSres = [(0.8308, 0.001),  # spearman only
+              (0.8213, 0.0470), # bootstrap only
+              (0.7764, 0.0356), # perturbation only
+              (0.7654, 0.0584)] # bootstrapping and perturbation
+
     # spearman only
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
                        bootstrap=False,
                        perturb=False,
                        return_dist=True)
-    print("Spearman only: ")
-    print("\trho=", res[0])
-    print("\tpval=", res[1])
+    try:
+        assert _np.isclose(MCSres[0][0], res[0],
+                           atol=MCSres[0][1])
+        sys.stdout.write("Passed spearman check.\n")
+    except AssertionError:
+        sys.stderr.write("Spearman comparison failed.\n")
 
     # bootstrap only
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
                        bootstrap=True,
                        perturb=False,
                        return_dist=True)
-    print("Bootstrap only: ")
-    print("\trho=", _np.mean(res[2]), "+/-", _np.std(res[2]))
-    print("\tpval=", _np.mean(res[3]), "+/-", _np.std(res[3]))
+    try:
+        assert _np.isclose(MCSres[1][0], _np.mean(res[2]),
+                           atol=MCSres[1][1])
+        sys.stdout.write("Passed bootstrap only method check.\n")
+    except AssertionError:
+        sys.stderr.write("Bootstrap only method comparison failed.\n")
 
     # perturbation only
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
                        bootstrap=False,
                        perturb=True,
                        return_dist=True)
-    print("Perturbation only: ")
-    print("\trho=", _np.mean(res[2]), "+/-", _np.std(res[2]))
-    print("\tpval=", _np.mean(res[3]), "+/-", _np.std(res[3]))
+    try:
+        assert _np.isclose(MCSres[2][0], _np.mean(res[2]),
+                           atol=MCSres[2][1])
+        sys.stdout.write("Passed perturbation only method check.\n")
+    except AssertionError:
+        sys.stderr.write("Perturbation only method comparison failed.\n")
 
     # composite method
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
                        bootstrap=True,
                        perturb=True,
-                       Nperturb=1,
                        return_dist=True)
-    print("Bootstrap & Perturbation: ")
-    print("\trho=", _np.mean(res[2]), "+/-", _np.std(res[2]))
-    print("\tpval=", _np.mean(res[3]), "+/-", _np.std(res[3]))
+    try:
+        assert _np.isclose(MCSres[3][0], _np.mean(res[2]),
+                           atol=MCSres[3][1])
+        sys.stdout.write("Passed composite method check.\n")
+    except AssertionError:
+        sys.stderr.write("Composite method comparison failed.\n")
+
+
+def main():
+    """
+    run tests
+    """
+
+    run_tests()
 
 
 if __name__ == "__main__":
