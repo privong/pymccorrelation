@@ -27,7 +27,7 @@ from scipy.stats import spearmanr as _spearmanr
 def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
                  bootstrap=True,
                  perturb=True,
-                 percentiles=(16, 50, 80), return_dist=False):
+                 percentiles=(16, 50, 84), return_dist=False):
     """
     Compute spearman rank coefficient with uncertainties using several methods.
     Arguments:
