@@ -7,6 +7,7 @@ Curran's original C implementation is [`MCSpearman`](https://github.com/PACurran
 ## Status
 
 All three modes (bootstrapping only, perturbing only, and composite) have been tested against Curran's code using the test data provided with `MCSpearman`.
+The (not very stringent) tests can be run using the `run_tests()` function or by running `python pymcspearman.py`.
 
 The python implementation is currently noticeably slower than the original C implementation.
 For the test data (53 entries) and 1e5 iterations:
