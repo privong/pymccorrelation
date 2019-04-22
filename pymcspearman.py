@@ -65,8 +65,8 @@ def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
             rho.append(trho)
             pval.append(tpval)
     else:
-        import warnings
-        warnings.warn("No bootstrapping or perturbation applied. Returning \
+        import warnings as _warnings
+        _warnings.warn("No bootstrapping or perturbation applied. Returning \
 normal spearman rank values.")
         return _spearmanr(x, y)
 
@@ -112,9 +112,9 @@ def run_tests():
     try:
         assert _np.isclose(MCSres[0][0], res[0],
                            atol=MCSres[0][1])
-        sys.stdout.write("Passed spearman check.\n")
+        _sys.stdout.write("Passed spearman check.\n")
     except AssertionError:
-        sys.stderr.write("Spearman comparison failed.\n")
+        _sys.stderr.write("Spearman comparison failed.\n")
 
     # bootstrap only
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
@@ -124,9 +124,9 @@ def run_tests():
     try:
         assert _np.isclose(MCSres[1][0], _np.mean(res[2]),
                            atol=MCSres[1][1])
-        sys.stdout.write("Passed bootstrap only method check.\n")
+        _sys.stdout.write("Passed bootstrap only method check.\n")
     except AssertionError:
-        sys.stderr.write("Bootstrap only method comparison failed.\n")
+        _sys.stderr.write("Bootstrap only method comparison failed.\n")
 
     # perturbation only
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
@@ -136,9 +136,9 @@ def run_tests():
     try:
         assert _np.isclose(MCSres[2][0], _np.mean(res[2]),
                            atol=MCSres[2][1])
-        sys.stdout.write("Passed perturbation only method check.\n")
+        _sys.stdout.write("Passed perturbation only method check.\n")
     except AssertionError:
-        sys.stderr.write("Perturbation only method comparison failed.\n")
+        _sys.stderr.write("Perturbation only method comparison failed.\n")
 
     # composite method
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
@@ -148,9 +148,9 @@ def run_tests():
     try:
         assert _np.isclose(MCSres[3][0], _np.mean(res[2]),
                            atol=MCSres[3][1])
-        sys.stdout.write("Passed composite method check.\n")
+        _sys.stdout.write("Passed composite method check.\n")
     except AssertionError:
-        sys.stderr.write("Composite method comparison failed.\n")
+        _sys.stderr.write("Composite method comparison failed.\n")
 
 
 def main():
@@ -162,6 +162,6 @@ def main():
 
 
 if __name__ == "__main__":
-    import sys
-    sys.stdout.write("\nModule run as a program. Running test suite.\n\n")
+    import sys as _sys
+    _sys.stdout.write("\nModule run as a program. Running test suite.\n\n")
     main()
