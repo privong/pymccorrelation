@@ -5,8 +5,8 @@ Python implementation of Curran (2014) method for measuring correlation with
 errors.
 """
 
-import numpy as np
-from scipy.stats import spearmanr
+import numpy as _np
+from scipy.stats import _spearmanr
 
 
 def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
@@ -44,23 +44,23 @@ def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
 
     if bootstrap:
         for i in range(Nboot):
-            members = np.random.randint(0, high=Nvalues-1, size=Nvalues)
+            members = _np.random.randint(0, high=Nvalues-1, size=Nvalues)
             xp = x[members]
             yp = y[members]
             if perturb:
-                xp += np.random.normal(size=Nvalues) * dx[members]
-                yp += np.random.normal(size=Nvalues) * dy[members]
+                xp += _np.random.normal(size=Nvalues) * dx[members]
+                yp += _np.random.normal(size=Nvalues) * dy[members]
 
-            trho, tpval = spearmanr(xp, yp)
+            trho, tpval = _spearmanr(xp, yp)
 
             rho.append(trho)
             pval.append(tpval)
     elif perturb:
         for i in range(Nperturb):
-            xp = x + np.random.normal(size=Nvalues) * dx
-            yp = y + np.random.normal(size=Nvalues) * dy
+            xp = x + _np.random.normal(size=Nvalues) * dx
+            yp = y + _np.random.normal(size=Nvalues) * dy
 
-            trho, tpval = spearmanr(xp, yp)
+            trho, tpval = _spearmanr(xp, yp)
 
             rho.append(trho)
             pval.append(tpval)
@@ -68,10 +68,10 @@ def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
         import warnings
         warnings.warn("No bootstrapping or perturbation applied. Returning \
 normal spearman rank values.")
-        return spearmanr(x, y)
+        return _spearmanr(x, y)
 
-    frho = np.percentile(rho, percentiles)
-    fpval = np.percentile(pval, percentiles)
+    frho = _np.percentile(rho, percentiles)
+    fpval = _np.percentile(pval, percentiles)
 
     if return_dist:
         return frho, fpval, rho, pval
@@ -86,7 +86,7 @@ def main():
     import os
 
     # load test data
-    data = np.genfromtxt(os.environ['HOME'] + '/astro/software/MCSpearman/test.data',
+    data = _np.genfromtxt(os.environ['HOME'] + '/astro/software/MCSpearman/test.data',
                          usecols=(0, 1, 2, 3),
                          dtype=[('x', float),
                                 ('dx', float),
@@ -108,8 +108,8 @@ def main():
                        perturb=False,
                        return_dist=True)
     print("Bootstrap only: ")
-    print("\trho=", np.mean(res[2]), "+/-", np.std(res[2]))
-    print("\tpval=", np.mean(res[3]), "+/-", np.std(res[3]))
+    print("\trho=", _np.mean(res[2]), "+/-", _np.std(res[2]))
+    print("\tpval=", _np.mean(res[3]), "+/-", _np.std(res[3]))
 
     # perturbation only
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
@@ -117,8 +117,8 @@ def main():
                        perturb=True,
                        return_dist=True)
     print("Perturbation only: ")
-    print("\trho=", np.mean(res[2]), "+/-", np.std(res[2]))
-    print("\tpval=", np.mean(res[3]), "+/-", np.std(res[3]))
+    print("\trho=", _np.mean(res[2]), "+/-", _np.std(res[2]))
+    print("\tpval=", _np.mean(res[3]), "+/-", _np.std(res[3]))
 
     # composite method
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
@@ -127,8 +127,8 @@ def main():
                        Nperturb=1,
                        return_dist=True)
     print("Bootstrap & Perturbation: ")
-    print("\trho=", np.mean(res[2]), "+/-", np.std(res[2]))
-    print("\tpval=", np.mean(res[3]), "+/-", np.std(res[3]))
+    print("\trho=", _np.mean(res[2]), "+/-", _np.std(res[2]))
+    print("\tpval=", _np.mean(res[3]), "+/-", _np.std(res[3]))
 
 
 if __name__ == "__main__":
