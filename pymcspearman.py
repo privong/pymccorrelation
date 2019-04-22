@@ -1,5 +1,5 @@
 """
-pyMCSpearman.py
+pymcspearman.py
 
 Python implementation of Curran (2014) method for measuring correlation with
 errors.
@@ -9,7 +9,7 @@ import numpy as np
 from scipy.stats import spearmanr
 
 
-def pyMCSpearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
+def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
                  bootstrap=True,
                  perturb=True,
                  percentiles=(16, 50, 80), return_dist=False):
@@ -94,7 +94,7 @@ def main():
                                 ('dy', float)])
 
     # spearman only
-    res = pyMCSpearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
+    res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
                        bootstrap=False,
                        perturb=False,
                        return_dist=True)
@@ -103,7 +103,7 @@ def main():
     print("\tpval=", res[1])
 
     # bootstrap only
-    res = pyMCSpearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
+    res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
                        bootstrap=True,
                        perturb=False,
                        return_dist=True)
@@ -112,7 +112,7 @@ def main():
     print("\tpval=", np.mean(res[3]), "+/-", np.std(res[3]))
 
     # perturbation only
-    res = pyMCSpearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
+    res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
                        bootstrap=False,
                        perturb=True,
                        return_dist=True)
@@ -121,7 +121,7 @@ def main():
     print("\tpval=", np.mean(res[3]), "+/-", np.std(res[3]))
 
     # composite method
-    res = pyMCSpearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
+    res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
                        bootstrap=True,
                        perturb=True,
                        Nperturb=1,
