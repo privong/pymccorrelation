@@ -7,8 +7,6 @@ tau rank correlation coefficient with uncertainties on censored data (upper/lowe
 """
 
 import numpy as np
-from matplotlib import pyplot as plt
-import pandas as pd
 import scipy.stats as st
 
 #generalized kendall tau test described in Isobe,Feigelson & Nelson 1986
@@ -58,7 +56,7 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None, Nboot=10000, Nperturb=10000,
     perturb=True,
     percentiles=(16,50,84), return_dist=False):
     """
-    Compute spearman rank coefficient with uncertainties using several methods.
+    Compute Kendall tau coefficient with uncertainties using several methods.
     Arguments:
     x: independent variable array
     y: dependent variable array
