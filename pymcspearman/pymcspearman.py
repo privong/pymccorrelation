@@ -72,11 +72,15 @@ def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
             rho.append(trho)
             pval.append(tpval)
     elif perturb:
-        for i in range(Nperturb):
-            xp = x + _np.random.normal(size=Nvalues) * dx
-            yp = y + _np.random.normal(size=Nvalues) * dy
+        xp = _np.random.normal(loc=x,
+                               scale=dx,
+                               size=(Nperturb, Nvalues))
+        yp = _np.random.normal(loc=y,
+                               scale=dy,
+                               size=(Nperturb, Nvalues))
 
-            trho, tpval = _spearmanr(xp, yp)
+        for i in range(Nperturb):
+            trho, tpval = _spearmanr(xp[i, :], yp[i, :])
 
             rho.append(trho)
             pval.append(tpval)
