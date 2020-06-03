@@ -4,7 +4,7 @@ pymcspearman.py
 Python implementation of Curran (2014) method for calculating Spearman's
 rank correlation coefficient with uncertainties.
 
-Copyright 2019 George C. Privon
+Copyright 2019-2020 George C. Privon
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -58,13 +58,14 @@ def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
     Nvalues = len(x)
 
     if bootstrap:
+        members = _np.random.randint(0, high=Nvalues-1,
+                                     size=(Nboot, Nvalues))
         for i in range(Nboot):
-            members = _np.random.randint(0, high=Nvalues-1, size=Nvalues)
-            xp = x[members]
-            yp = y[members]
+            xp = x[members[i, :]]
+            yp = y[members[i, :]]
             if perturb:
-                xp += _np.random.normal(size=Nvalues) * dx[members]
-                yp += _np.random.normal(size=Nvalues) * dy[members]
+                xp += _np.random.normal(size=Nvalues) * dx[members[i, :]]
+                yp += _np.random.normal(size=Nvalues) * dy[members[i, :]]
 
             trho, tpval = _spearmanr(xp, yp)
 
