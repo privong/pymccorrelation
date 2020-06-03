@@ -24,6 +24,32 @@ import numpy as _np
 from scipy.stats import spearmanr as _spearmanr
 
 
+def perturb_values(x, y, dx, dy, Nperturb=10000):
+    """
+    For input points (x, y) with errors (dx, dy) return Nperturb sets of
+    values draw from Gaussian distributions centered at x+-dx and y+-dy.
+    """
+
+    assert len(x) == len(y)
+    assert len(dx) == len(dy)
+    assert len(x) == len(dx)
+
+    Nvalues = len(x)
+
+    xp = _np.random.normal(loc=x,
+                           scale=dx,
+                           size=(Nperturb, Nvalues))
+    yp = _np.random.normal(loc=y,
+                           scale=dy,
+                           size=(Nperturb, Nvalues))
+
+    if Nperturb == 1:
+        xp = xp.flatten()
+        yp = yp.flatten()
+
+    return xp, yp
+
+
 def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
                  bootstrap=True,
                  perturb=True,
@@ -58,27 +84,29 @@ def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
     Nvalues = len(x)
 
     if bootstrap:
+        # generate all the needed bootstrapping indices
         members = _np.random.randint(0, high=Nvalues-1,
                                      size=(Nboot, Nvalues))
+        # loop over sets of bootstrapping indices and compute
+        # correlation coefficient
         for i in range(Nboot):
             xp = x[members[i, :]]
             yp = y[members[i, :]]
             if perturb:
-                xp += _np.random.normal(size=Nvalues) * dx[members[i, :]]
-                yp += _np.random.normal(size=Nvalues) * dy[members[i, :]]
+                # return only 1 perturbation on top of the bootstrapping
+                xp, yp = perturb_values(x[members[i, :]], y[members[i, :]],
+                                        dx[members[i, :]], dy[members[i, :]],
+                                        Nperturb=1)
 
             trho, tpval = _spearmanr(xp, yp)
 
             rho.append(trho)
             pval.append(tpval)
     elif perturb:
-        xp = _np.random.normal(loc=x,
-                               scale=dx,
-                               size=(Nperturb, Nvalues))
-        yp = _np.random.normal(loc=y,
-                               scale=dy,
-                               size=(Nperturb, Nvalues))
-
+        # generate Nperturb perturbed copies of the dataset
+        xp, yp = perturb_values(x, y, dx, dy, Nperturb=Nperturb)
+        # loop over each perturbed copy and compute the correlation
+        # coefficient
         for i in range(Nperturb):
             trho, tpval = _spearmanr(xp[i, :], yp[i, :])
 
