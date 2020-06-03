@@ -1,5 +1,5 @@
 """
-pymcspearman.py
+pymccorrelation.py
 
 Python implementation of Curran (2014) method for calculating Spearman's
 rank correlation coefficient with uncertainties. Extended to also calculate
@@ -26,6 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import numpy as _np
+import scipy.stats as st
 from scipy.stats import spearmanr as _spearmanr
 
 
