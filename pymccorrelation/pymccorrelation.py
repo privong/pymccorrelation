@@ -201,9 +201,6 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None,
     if dy is not None and len(dy) != len(y):
         raise ValueError("dx and x must be the same length.")
 
-    rho = []
-    pval = []
-
     Nvalues = len(x)
 
     if Nboot is not None:
