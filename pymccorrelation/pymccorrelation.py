@@ -56,9 +56,34 @@ def perturb_values(x, y, dx, dy, Nperturb=10000):
     return xp, yp
 
 
-#generalized kendall tau test described in Isobe,Feigelson & Nelson 1986
-#need to come up some way to vectorize this function, very slow
-def kendall(x,y,xlim,ylim):
+def kendall(x, y,
+            xlim=None, ylim=None):
+    """
+    Kendall tau wrapper function to determine if we need to handle censoring.
+    If there is censoring, hand it off to the IFN 1986 generalized function.
+    """
+
+    if xlim is None and ylim is None:
+        from scipy.stats import kendalltau
+        return kendalltau(x, y)
+
+    return kendall_IFN86(x, y, xlim, ylim)
+
+
+def kendall_IFN86(x, y,
+            xlim, ylim):
+    """
+    Generalized kendall tau test described in Isobe, Feigelson & Nelson 1986
+    ApJ 306, 490-507.
+
+    Parameters:
+        x: independent variable
+        y: dependent variable
+        xlim/ylim: censoring information for the variables.
+    """
+
+    #TODO: vectorize this function, very slow
+
     #x, y are two arrays, either may contain censored data
     #xlim, ylim are arrays indicating if x or y are lower or upperlimits,-1--lowerlimit,+1--upperlimit,0--detection
     num=len(x)#x,y should have same length
