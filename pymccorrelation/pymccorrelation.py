@@ -71,7 +71,7 @@ def kendall(x, y,
 
 
 def kendall_IFN86(x, y,
-            xlim, ylim):
+                  xlim, ylim):
     """
     Generalized kendall tau test described in Isobe, Feigelson & Nelson 1986
     ApJ 306, 490-507.
@@ -445,6 +445,18 @@ def run_tests():
     except AssertionError:
         _sys.stderr.write("Composite method comparison failed.\n")
 
+    # test Kendall tau IFN86 for consistency with scipy
+    from scipy.stats import kendalltau
+    sres = kendalltau(data['x'], data['y'])
+    IFN86res = kendall_IFN86(data['x'], data['y'],
+                             xlim=_np.zeros(len(data)),
+                             ylim=_np.zeros(len(data)))
+    try:
+        assert _np.isclose(sres[0], IFN86res[0])
+        assert _np.isclose(sres[1], IFN86res[1])
+        _sys.stdout.write("Passed Kendall tau comparison.\n")
+    except AssertionError:
+        _sys.stderr.write("Kendall tau comparison with scipy failed.\n")
 
 def main():
     """
