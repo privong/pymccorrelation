@@ -26,7 +26,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import numpy as _np
-import scipy.stats as st
+import scipy.stats as _st
 from scipy.stats import spearmanr as _spearmanr
 
 
@@ -63,8 +63,8 @@ def kendall(x,y,xlim,ylim):
     #xlim, ylim are arrays indicating if x or y are lower or upperlimits,-1--lowerlimit,+1--upperlimit,0--detection
     num=len(x)#x,y should have same length
     #set up pair counters
-    a=np.zeros((num,num))
-    b=np.zeros((num,num))
+    a=_np.zeros((num,num))
+    b=_np.zeros((num,num))
     
     for i in range(num):
         for j in range(num):
@@ -89,12 +89,12 @@ def kendall(x,y,xlim,ylim):
                     b[i,j]=1
                     
             
-    S = np.sum(a*b)
-    var = (4/(num*(num-1)*(num-2)))*(np.sum(a*np.sum(a,axis=1,keepdims=True))-np.sum(a*a))\
-    *(np.sum(b*np.sum(b,axis=1,keepdims=True))-np.sum(b*b))+(2/(num*(num-1)))*np.sum(a*a)*np.sum(b*b)
-    z=S/np.sqrt(var)
-    tau=z*np.sqrt(2*(2*num+5))/(3*np.sqrt(num*(num-1)))
-    pval=st.norm.sf(abs(z))*2
+    S = _np.sum(a*b)
+    var = (4/(num*(num-1)*(num-2)))*(_np.sum(a*_np.sum(a,axis=1,keepdims=True))-_np.sum(a*a))\
+    *(_np.sum(b*_np.sum(b,axis=1,keepdims=True))-_np.sum(b*b))+(2/(num*(num-1)))*_np.sum(a*a)*_np.sum(b*b)
+    z=S/_np.sqrt(var)
+    tau=z*_np.sqrt(2*(2*num+5))/(3*_np.sqrt(num*(num-1)))
+    pval=_st.norm.sf(abs(z))*2
     return tau,pval
 
 
@@ -207,26 +207,26 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None,
     Nvalues = len(x)
 
     if Nboot is not None:
-        tau = np.zeros(Nboot)
-        pval = np.zeros(Nboot)
-        members = np.random.randint(0, high=Nvalues-1, size=(Nboot,Nvalues)) #randomly resample
+        tau = _np.zeros(Nboot)
+        pval = _np.zeros(Nboot)
+        members = _np.random.randint(0, high=Nvalues-1, size=(Nboot,Nvalues)) #randomly resample
         xp = x[members]
         yp = y[members]
         xplim = xlim[members] #get lim indicators for resampled x, y
         yplim = ylim[members]
         if Nperturb is not None:
-            xp[xplim==0] += np.random.normal(size=np.shape(xp[xplim==0])) * dx[members][xplim==0] #only perturb the detections
-            yp[yplim==0] += np.random.normal(size=np.shape(yp[yplim==0])) * dy[members][yplim==0] #only perturb the detections
+            xp[xplim==0] += _np.random.normal(size=_np.shape(xp[xplim==0])) * dx[members][xplim==0] #only perturb the detections
+            yp[yplim==0] += _np.random.normal(size=_np.shape(yp[yplim==0])) * dy[members][yplim==0] #only perturb the detections
         
         #calculate tau and pval for each iteration
         for i in range(Nboot):
             tau[i],pval[i] = kendall(xp[i,:], yp[i,:], xplim[i,:], yplim[i,:])
        
     elif Nperturb is not None:
-        tau = np.zeros(Nperturb)
-        pval = np.zeros(Nperturb)
-        yp=[y]*Nperturb+np.random.normal(size=(Nperturb,Nvalues))*dy #perturb all data first
-        xp=[x]*Nperturb+np.random.normal(size=(Nperturb,Nvalues))*dx
+        tau = _np.zeros(Nperturb)
+        pval = _np.zeros(Nperturb)
+        yp=[y]*Nperturb+_np.random.normal(size=(Nperturb,Nvalues))*dy #perturb all data first
+        xp=[x]*Nperturb+_np.random.normal(size=(Nperturb,Nvalues))*dx
         yp[:,ylim!=0]=y[ylim!=0] #set upperlimits and lowerlimits to be unperturbed
         xp[:,xlim!=0]=x[xlim!=0] #so only real detections are perturbed
             
@@ -240,8 +240,8 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None,
         tau,pval=kendall(x, y, xlim, ylim)
         return tau,pval
 
-    ftau = np.nanpercentile(tau, percentiles)
-    fpval = np.nanpercentile(pval, percentiles)
+    ftau = _np.nanpercentile(tau, percentiles)
+    fpval = _np.nanpercentile(pval, percentiles)
 
     if return_dist:
         return ftau, fpval, tau, pval
