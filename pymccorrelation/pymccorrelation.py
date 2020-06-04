@@ -98,9 +98,9 @@ def kendall(x,y,xlim,ylim):
     return tau,pval
 
 
-def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
-                 bootstrap=True,
-                 perturb=True,
+def pymcspearman(x, y, dx=None, dy=None,
+                 Nboot=None,
+                 Nperturb=None,
                  percentiles=(16, 50, 84), return_dist=False):
     """
     Compute spearman rank coefficient with uncertainties using several methods.
@@ -109,15 +109,13 @@ def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
     y: dependent variable array
     dx: uncertainties on independent variable (assumed to be normal)
     dy: uncertainties on dependent variable (assumed to be normal)
-    Nboot: number of times to bootstrap (if bootstrap=True)
-    Nperturb: number of times to perturb (if perturb=True)
-    bootstrap: whether to include bootstrapping. True/False
-    perturb: whether to include perturbation. True/False
+    Nboot: number of times to bootstrap (does not boostrap if =None)
+    Nperturb: number of times to perturb (does not perturb if =None)
     percentiles: list of percentiles to compute from final distribution
     return_dist: if True, return the full distribution of rho and p-value
     """
 
-    if perturb and dx is None and dy is None:
+    if Nperturb is not None and dx is None and dy is None:
         raise ValueError("dx or dy must be provided if perturbation is to be used.")
     if len(x) != len(y):
         raise ValueError("x and y must be the same length.")
@@ -132,7 +130,7 @@ def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
 
     Nvalues = len(x)
 
-    if bootstrap:
+    if Nboot is not None:
         # generate all the needed bootstrapping indices
         members = _np.random.randint(0, high=Nvalues-1,
                                      size=(Nboot, Nvalues))
@@ -141,7 +139,7 @@ def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
         for i in range(Nboot):
             xp = x[members[i, :]]
             yp = y[members[i, :]]
-            if perturb:
+            if Nperturb is not None:
                 # return only 1 perturbation on top of the bootstrapping
                 xp, yp = perturb_values(x[members[i, :]], y[members[i, :]],
                                         dx[members[i, :]], dy[members[i, :]],
@@ -151,7 +149,7 @@ def pymcspearman(x, y, dx=None, dy=None, Nboot=10000, Nperturb=10000,
 
             rho.append(trho)
             pval.append(tpval)
-    elif perturb:
+    elif Nperturb is not None:
         # generate Nperturb perturbed copies of the dataset
         xp, yp = perturb_values(x, y, dx, dy, Nperturb=Nperturb)
         # loop over each perturbed copy and compute the correlation
@@ -175,10 +173,10 @@ normal spearman rank values.")
     return frho, fpval
 
 
-def pymckendall(x, y, xlim, ylim, dx=None, dy=None, Nboot=10000, Nperturb=10000,
-    bootstrap=True,
-    perturb=True,
-    percentiles=(16,50,84), return_dist=False):
+def pymckendall(x, y, xlim, ylim, dx=None, dy=None,
+                Nboot=None,
+                Nperturb=None,
+                percentiles=(16,50,84), return_dist=False):
     """
     Compute Kendall tau coefficient with uncertainties using several methods.
     Arguments:
@@ -188,15 +186,13 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None, Nboot=10000, Nperturb=10000,
     ylim: array indicating if x is upperlimit (1), lowerlimit(-1), or detection(0)
     dx: uncertainties on independent variable (assumed to be normal)
     dy: uncertainties on dependent variable (assumed to be normal)
-    Nboot: number of times to bootstrap (if bootstrap=True)
-    Nperturb: number of times to perturb (if perturb=True)
-    bootstrap: whether to include bootstrapping. True/False
-    perturb: whether to include perturbation. True/False
+    Nboot: number of times to bootstrap (does not boostrap if =None)
+    Nperturb: number of times to perturb (does not perturb if =None)
     percentiles: list of percentiles to compute from final distribution
     return_dist: if True, return the full distribution of rho and p-value
     """
 
-    if perturb and dx is None and dy is None:
+    if Nperturb is not None and dx is None and dy is None:
         raise ValueError("dx or dy must be provided if perturbation is to be used.")
     if len(x) != len(y):
         raise ValueError("x and y must be the same length.")
@@ -210,7 +206,7 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None, Nboot=10000, Nperturb=10000,
 
     Nvalues = len(x)
 
-    if bootstrap:
+    if Nboot is not None:
         tau = np.zeros(Nboot)
         pval = np.zeros(Nboot)
         members = np.random.randint(0, high=Nvalues-1, size=(Nboot,Nvalues)) #randomly resample
@@ -218,7 +214,7 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None, Nboot=10000, Nperturb=10000,
         yp = y[members]
         xplim = xlim[members] #get lim indicators for resampled x, y
         yplim = ylim[members]
-        if perturb:
+        if Nperturb is not None:
             xp[xplim==0] += np.random.normal(size=np.shape(xp[xplim==0])) * dx[members][xplim==0] #only perturb the detections
             yp[yplim==0] += np.random.normal(size=np.shape(yp[yplim==0])) * dy[members][yplim==0] #only perturb the detections
         
@@ -226,7 +222,7 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None, Nboot=10000, Nperturb=10000,
         for i in range(Nboot):
             tau[i],pval[i] = kendall(xp[i,:], yp[i,:], xplim[i,:], yplim[i,:])
        
-    elif perturb:
+    elif Nperturb is not None:
         tau = np.zeros(Nperturb)
         pval = np.zeros(Nperturb)
         yp=[y]*Nperturb+np.random.normal(size=(Nperturb,Nvalues))*dy #perturb all data first
@@ -280,8 +276,8 @@ def run_tests():
 
     # spearman only
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
-                       bootstrap=False,
-                       perturb=False,
+                       Nboot=None,
+                       Nperturb=None,
                        return_dist=True)
     try:
         assert _np.isclose(MCSres[0][0], res[0],
@@ -292,8 +288,8 @@ def run_tests():
 
     # bootstrap only
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
-                       bootstrap=True,
-                       perturb=False,
+                       Nboot=10000,
+                       Nperturb=None,
                        return_dist=True)
     try:
         assert _np.isclose(MCSres[1][0], _np.mean(res[2]),
@@ -304,8 +300,8 @@ def run_tests():
 
     # perturbation only
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
-                       bootstrap=False,
-                       perturb=True,
+                       Nboot=None,
+                       Nperturb=10000,
                        return_dist=True)
     try:
         assert _np.isclose(MCSres[2][0], _np.mean(res[2]),
@@ -316,8 +312,8 @@ def run_tests():
 
     # composite method
     res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
-                       bootstrap=True,
-                       perturb=True,
+                       Nboot=10000,
+                       Nperturb=10000,
                        return_dist=True)
     try:
         assert _np.isclose(MCSres[3][0], _np.mean(res[2]),
