@@ -98,6 +98,107 @@ def kendall(x,y,xlim,ylim):
     return tau,pval
 
 
+def pymccorrelation(x, y,
+                    dx=None, dy=None,
+                    xlim=None, ylim=None,
+                    Nboot=None,
+                    Nperturb=None,
+                    coeff=None,
+                    percentiles=(16, 50, 84),
+                    return_dist=False):
+    """
+    Compute spearman rank coefficient with uncertainties using several methods.
+    Arguments:
+    x: independent variable array
+    y: dependent variable array
+    dx: uncertainties on independent variable (assumed to be normal)
+    dy: uncertainties on dependent variable (assumed to be normal)
+    xlim: censoring information for independent variable to compute
+        generalized Kendall tau
+    ylim: censoring information for dependent variable to compute generalized
+        Kendall tau
+    Nboot: number of times to bootstrap (does not boostrap if =None)
+    Nperturb: number of times to perturb (does not perturb if =None)
+    coeff: Correlation coefficient to compute. Must be one of:
+        ['spearmanr', 'kendallt']
+    percentiles: list of percentiles to compute from final distribution
+    return_dist: if True, return the full distribution of rho and p-value
+    """
+
+    if Nperturb is not None and dx is None and dy is None:
+        raise ValueError("dx or dy must be provided if perturbation is to be used.")
+    if len(x) != len(y):
+        raise ValueError("x and y must be the same length.")
+    if dx is not None and len(dx) != len(x):
+        raise ValueError("dx and x must be the same length.")
+    if dy is not None and len(dy) != len(y):
+        raise ValueError("dx and x must be the same length.")
+
+    # TODO: add checks for censoring when not doing kendall tau
+    coeffs_impl = ['spearmanr', 'kendallt']
+    if coeff not in coeffs_impl:
+        raise ValueError("coeff must be one of " + ', '.join(coeffs_impl))
+
+    if coeff != 'kendallt' and (xlim is not None or ylim is not None):
+        raise ValueError('')
+    Nvalues = len(x)
+
+    if Nboot is None and Nperturb is None:
+        # we can just return the normal values
+        import warnings as _warnings
+        _warnings.warn("No bootstrapping or perturbation applied. Returning \
+normal " + coeff + " output.")
+        if coeff == 'spearmanr':
+            return _spearmanr(x, y)
+        elif coeff == 'kendallt':
+                return 
+
+
+
+
+    if Nboot is not None:
+        coeff = _np.zeros(Nboot)
+        pval = _np.zeros(Nboot)
+        # generate all the needed bootstrapping indices
+        members = _np.random.randint(0, high=Nvalues-1,
+                                     size=(Nboot, Nvalues))
+        # loop over sets of bootstrapping indices and compute
+        # correlation coefficient
+        for i in range(Nboot):
+            xp = x[members[i, :]]
+            yp = y[members[i, :]]
+            if Nperturb is not None:
+                # return only 1 perturbation on top of the bootstrapping
+                xp, yp = perturb_values(x[members[i, :]], y[members[i, :]],
+                                        dx[members[i, :]], dy[members[i, :]],
+                                        Nperturb=1)
+
+            if 
+            coeff[i], pval[i] = _spearmanr(xp, yp)
+
+    elif Nperturb is not None:
+        coeff = _np.zeros(Nperturb)
+        pval = _np.zeros(Nperturb)
+        # generate Nperturb perturbed copies of the dataset
+        xp, yp = perturb_values(x, y, dx, dy, Nperturb=Nperturb)
+        # loop over each perturbed copy and compute the correlation
+        # coefficient
+        for i in range(Nperturb):
+            coeff[i], pval[i]= _spearmanr(xp[i, :], yp[i, :])
+    else:
+        import warnings as _warnings
+        _warnings.warn("No bootstrapping or perturbation applied. Returning \
+normal spearman rank values.")
+        return _spearmanr(x, y)
+
+    frho = _np.percentile(rho, percentiles)
+    fpval = _np.percentile(pval, percentiles)
+
+    if return_dist:
+        return frho, fpval, rho, pval
+    return frho, fpval
+
+
 def pymcspearman(x, y, dx=None, dy=None,
                  Nboot=None,
                  Nperturb=None,
