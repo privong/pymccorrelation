@@ -79,14 +79,19 @@ def kendall_IFN86(x, y,
     Parameters:
         x: independent variable
         y: dependent variable
-        xlim/ylim: censoring information for the variables.
+        xlim/ylim: censoring information for the variables. Values of
+            (-1, 1, 0) correspond to (lower limit, upper limit, detection)
+    Note that both x and y can be censored.
     """
 
     #TODO: vectorize this function, very slow
 
-    #x, y are two arrays, either may contain censored data
-    #xlim, ylim are arrays indicating if x or y are lower or upperlimits,-1--lowerlimit,+1--upperlimit,0--detection
-    num = len(x)#x,y should have same length
+    # the argument variable should have the same length
+    assert len(x) == len(y)
+    assert len(xlim) == len(ylim)
+    assert len(x) == len(xlim)
+
+    num = len(x)
     #set up pair counters
     a = _np.zeros((num, num))
     b = _np.zeros((num, num))
