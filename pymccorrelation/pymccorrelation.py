@@ -169,11 +169,18 @@ def pymccorrelation(x, y,
 
     # TODO: add checks for censoring when not doing kendall tau
     coeffs_impl = ['spearmanr', 'kendallt']
+    # make sure an implemented correlation coefficient type is requested
     if coeff not in coeffs_impl:
         raise ValueError("coeff must be one of " + ', '.join(coeffs_impl))
 
-    if coeff != 'kendallt' and (xlim is not None or ylim is not None):
-        raise ValueError('')
+    # censoring is only implemented for kendall's tau, return an error
+    # if censored data is provided
+    if coeff != 'kendallt' and \
+       ((xlim is not None or ylim is not None) or
+        (_np.all(xlim == 0) and _np.all(ylim == 0))):
+        raise ValueError('Censored data provided, but ' + coeff + ' does not \
+support censored data.')
+
     Nvalues = len(x)
 
     if Nboot is None and Nperturb is None:
