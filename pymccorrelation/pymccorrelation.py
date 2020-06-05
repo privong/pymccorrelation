@@ -199,9 +199,8 @@ normal " + coeff + " output.")
             return kendall(x, y, xlim=xlim, ylim=ylim)
         #elif coeff == 'pearsonr':
 
-
-
-
+    # TODO: if xlim/ylim are provided, only perturb the detected points
+    # (i.e., xlim==0 or ylim==0)
 
     if Nboot is not None:
         coeff = _np.zeros(Nboot)
@@ -215,12 +214,11 @@ normal " + coeff + " output.")
             xp = x[members[i, :]]
             yp = y[members[i, :]]
             if Nperturb is not None:
-                # return only 1 perturbation on top of the bootstrapping
+                # perform 1 perturbation on top of the bootstrapping
                 xp, yp = perturb_values(x[members[i, :]], y[members[i, :]],
                                         dx[members[i, :]], dy[members[i, :]],
                                         Nperturb=1)
 
-            if 
             coeff[i], pval[i] = _spearmanr(xp, yp)
 
     elif Nperturb is not None:
