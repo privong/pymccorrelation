@@ -86,41 +86,44 @@ def kendall_IFN86(x, y,
 
     #x, y are two arrays, either may contain censored data
     #xlim, ylim are arrays indicating if x or y are lower or upperlimits,-1--lowerlimit,+1--upperlimit,0--detection
-    num=len(x)#x,y should have same length
+    num = len(x)#x,y should have same length
     #set up pair counters
-    a=_np.zeros((num,num))
-    b=_np.zeros((num,num))
+    a = _np.zeros((num, num))
+    b = _np.zeros((num, num))
     
     for i in range(num):
         for j in range(num):
-            if x[i]==x[j]:
-                a[i,j]=0
+            if x[i] == x[j]:
+                a[i, j] = 0
             elif x[i] > x[j]: #if x[i] is definitely > x[j]
-                if (xlim[i]==0 or xlim[i]==-1) and (xlim[j]==0 or xlim[j]==1):
-                    a[i,j]=-1
+                if (xlim[i] == 0 or xlim[i] == -1) and (xlim[j] == 0 or xlim[j] == 1):
+                    a[i, j] = -1
             else: #if x[i] is definitely < x[j], all other uncertain cases have aij=0
-                if (xlim[i]==0 or xlim[i]==1) and (xlim[j]==0 or xlim[j]==-1):
-                    a[i,j]=1
+                if (xlim[i] == 0 or xlim[i] == 1) and (xlim[j] == 0 or xlim[j] == -1):
+                    a[i, j] = 1
             
     for i in range(num):
         for j in range(num):
-            if y[i]==y[j]:
-                b[i,j]=0
+            if y[i] == y[j]:
+                b[i, j] = 0
             elif y[i] > y[j]:
-                if (ylim[i]==0 or ylim[i]==-1) and (ylim[j]==0 or ylim[j]==1):
-                    b[i,j]=-1
+                if (ylim[i] == 0 or ylim[i] == -1) and (ylim[j] == 0 or ylim[j] == 1):
+                    b[i, j] = -1
             else:
-                 if (ylim[i]==0 or ylim[i]==0) and (ylim[j]==0 or ylim[j]==-1):
-                    b[i,j]=1
+                 if (ylim[i] == 0 or ylim[i] == 0) and (ylim[j] == 0 or ylim[j] == -1):
+                    b[i, j] = 1
                     
             
-    S = _np.sum(a*b)
-    var = (4/(num*(num-1)*(num-2)))*(_np.sum(a*_np.sum(a,axis=1,keepdims=True))-_np.sum(a*a))\
-    *(_np.sum(b*_np.sum(b,axis=1,keepdims=True))-_np.sum(b*b))+(2/(num*(num-1)))*_np.sum(a*a)*_np.sum(b*b)
-    z=S/_np.sqrt(var)
-    tau=z*_np.sqrt(2*(2*num+5))/(3*_np.sqrt(num*(num-1)))
-    pval=_st.norm.sf(abs(z))*2
-    return tau,pval
+    S = _np.sum(a * b)
+    var = (4 / (num * (num - 1) * (num - 2))) * \
+          (_np.sum(a * _np.sum(a, axis=1, keepdims=True)) - _np.sum(a * a)) * \
+          (_np.sum( b * _np.sum(b, axis=1, keepdims=True)) - _np.sum(b * b)) + \
+          (2 / (num * (num - 1))) * \
+          _np.sum(a * a) * _np.sum(b * b)
+    z = S/ _np.sqrt(var)
+    tau = z * _np.sqrt(2 * (2 * num + 5)) / (3 * _np.sqrt(num * (num - 1)))
+    pval = _st.norm.sf(abs(z)) * 2
+    return tau, pval
 
 
 def pymccorrelation(x, y,
