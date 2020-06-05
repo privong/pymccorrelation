@@ -158,6 +158,8 @@ def pymccorrelation(x, y,
     return_dist: if True, return the full distribution of rho and p-value
     """
 
+    # do some checks on input array lengths and ensure the necessary data
+    # is provided
     if Nperturb is not None and dx is None and dy is None:
         raise ValueError("dx or dy must be provided if perturbation is to be used.")
     if len(x) != len(y):
@@ -183,15 +185,20 @@ support censored data.')
 
     Nvalues = len(x)
 
+    # if no bootstrapping or correlation is requested, we can just
+    # report the normal correlation coefficient values
     if Nboot is None and Nperturb is None:
-        # we can just return the normal values
         import warnings as _warnings
         _warnings.warn("No bootstrapping or perturbation applied. Returning \
 normal " + coeff + " output.")
         if coeff == 'spearmanr':
             return _spearmanr(x, y)
         elif coeff == 'kendallt':
-                return 
+            # pass along the xlim/ylim arrays, and the wrapper will handle
+            # the presence of censored data
+            return kendall(x, y, xlim=xlim, ylim=ylim)
+        #elif coeff == 'pearsonr':
+
 
 
 
