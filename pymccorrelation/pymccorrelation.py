@@ -358,25 +358,27 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None,
         
         #calculate tau and pval for each iteration
         for i in range(Nboot):
-            tau[i],pval[i] = kendall(xp[i,:], yp[i,:], xplim[i,:], yplim[i,:])
+            tau[i], pval[i] = kendall(xp[i, :], yp[i, :],
+                                      xplim[i, :], yplim[i, :])
        
     elif Nperturb is not None:
         tau = _np.zeros(Nperturb)
         pval = _np.zeros(Nperturb)
-        yp=[y]*Nperturb+_np.random.normal(size=(Nperturb,Nvalues))*dy #perturb all data first
-        xp=[x]*Nperturb+_np.random.normal(size=(Nperturb,Nvalues))*dx
-        yp[:,ylim!=0]=y[ylim!=0] #set upperlimits and lowerlimits to be unperturbed
-        xp[:,xlim!=0]=x[xlim!=0] #so only real detections are perturbed
+        yp = [y] * Nperturb + _np.random.normal(size=(Nperturb, Nvalues)) * dy #perturb all data first
+        xp = [x] * Nperturb + _np.random.normal(size=(Nperturb, Nvalues)) * dx
+        yp[:, ylim!=0] = y[ylim!=0] #set upperlimits and lowerlimits to be unperturbed
+        xp[:, xlim!=0] = x[xlim!=0] #so only real detections are perturbed
             
         for i in range(Nperturb):
-            tau[i], pval[i] = kendall(xp[i,:], yp[i,:], xlim, ylim) #need to vectorize!
+            tau[i], pval[i] = kendall(xp[i, :], yp[i, :],
+                                      xlim, ylim)
 
     else:
         import warnings as _warnings
         _warnings.warn("No bootstrapping or perturbation applied. Returning \
-    normal generalized kendall tau.")
-        tau,pval=kendall(x, y, xlim, ylim)
-        return tau,pval
+normal generalized kendall tau.")
+        tau, pval = kendall(x, y, xlim, ylim)
+        return tau, pval
 
     ftau = _np.nanpercentile(tau, percentiles)
     fpval = _np.nanpercentile(pval, percentiles)
@@ -400,11 +402,11 @@ def run_tests():
                 tfile.name)
     # open temporary file
     data = _np.genfromtxt(tfile,
-                         usecols=(0, 1, 2, 3),
-                         dtype=[('x', float),
-                                ('dx', float),
-                                ('y', float),
-                                ('dy', float)])
+                          usecols=(0, 1, 2, 3),
+                          dtype=[('x', float),
+                                 ('dx', float),
+                                 ('y', float),
+                                 ('dy', float)])
 
     # tabulated results from a MCSpearman run with 10000 iterations
     MCSres = [(0.8308, 0.001),  # spearman only
