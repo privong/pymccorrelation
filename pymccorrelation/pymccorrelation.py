@@ -216,12 +216,12 @@ normal " + coeff + " output.")
 normal spearman rank values.")
         return _spearmanr(x, y)
 
-    frho = _np.percentile(rho, percentiles)
+    fcoeff = _np.percentile(coeff, percentiles)
     fpval = _np.percentile(pval, percentiles)
 
     if return_dist:
-        return frho, fpval, rho, pval
-    return frho, fpval
+        return fcoeff, fpval, coeff, pval
+    return fcoeff, fpval
 
 
 def pymcspearman(x, y, dx=None, dy=None,
@@ -457,6 +457,7 @@ def run_tests():
         _sys.stdout.write("Passed Kendall tau comparison.\n")
     except AssertionError:
         _sys.stderr.write("Kendall tau comparison with scipy failed.\n")
+
 
 def main():
     """
