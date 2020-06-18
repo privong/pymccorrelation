@@ -148,8 +148,10 @@ def pymccorrelation(x, y,
     dy: uncertainties on dependent variable (assumed to be normal)
     xlim: censoring information for independent variable to compute
         generalized Kendall tau
+        (-1, 1, 0) correspond to (lower limit, upper limit, detection)
     ylim: censoring information for dependent variable to compute generalized
         Kendall tau
+        (-1, 1, 0) correspond to (lower limit, upper limit, detection)
     Nboot: number of times to bootstrap (does not boostrap if =None)
     Nperturb: number of times to perturb (does not perturb if =None)
     coeff: Correlation coefficient to compute. Must be one of:
@@ -199,8 +201,14 @@ normal " + coeff + " output.")
             return kendall(x, y, xlim=xlim, ylim=ylim)
         #elif coeff == 'pearsonr':
 
-    # TODO: if xlim/ylim are provided, only perturb the detected points
-    # (i.e., xlim==0 or ylim==0)
+    # if perturbing points, and we have censored data, set up an index
+
+    if Nperturb is not None and (xlim is not None and ylim is not None):
+        do_per = np.logical_and(xlim == 0,
+                                ylim == 0)
+    else:
+        do_per = np.ones(len(x),
+                         dtype=bool)
 
     if Nboot is not None:
         coeff = _np.zeros(Nboot)
@@ -215,9 +223,11 @@ normal " + coeff + " output.")
             yp = y[members[i, :]]
             if Nperturb is not None:
                 # perform 1 perturbation on top of the bootstrapping
-                xp, yp = perturb_values(x[members[i, :]], y[members[i, :]],
-                                        dx[members[i, :]], dy[members[i, :]],
-                                        Nperturb=1)
+                xp[do_per], yp[do_per] = perturb_values(x[members[i, :]][do_per],
+                                                        y[members[i, :]][do_per],
+                                                        dx[members[i, :]][do_per],
+                                                        dy[members[i, :]][do_per],
+                                                        Nperturb=1)
 
             coeff[i], pval[i] = _spearmanr(xp, yp)
 
@@ -225,7 +235,11 @@ normal " + coeff + " output.")
         coeff = _np.zeros(Nperturb)
         pval = _np.zeros(Nperturb)
         # generate Nperturb perturbed copies of the dataset
-        xp, yp = perturb_values(x, y, dx, dy, Nperturb=Nperturb)
+        xp[do_per], yp[do_per] = perturb_values(x[do_per],
+                                                y[do_per],
+                                                dx[do_per],
+                                                dy[do_per],
+                                                Nperturb=Nperturb)
         # loop over each perturbed copy and compute the correlation
         # coefficient
         for i in range(Nperturb):
