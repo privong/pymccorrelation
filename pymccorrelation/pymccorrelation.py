@@ -282,7 +282,7 @@ def pymcspearman(x, y,
     """
 
     return pymccorrelation(x, y,
-                           dx=dx, dy=dy
+                           dx=dx, dy=dy,
                            Nboot=Nboot,
                            Nperturb=Nperturb,
                            coeff='spearmanr',
