@@ -433,10 +433,12 @@ def run_tests():
               (0.7654, 0.0584)] # bootstrapping and perturbation
 
     # spearman only
-    res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
-                       Nboot=None,
-                       Nperturb=None,
-                       return_dist=True)
+    res = pymccorrelation(data['x'], data['y'],
+                          dx=data['dx'], dy=data['dy'],
+                          coeff='spearmanr',
+                          Nboot=None,
+                          Nperturb=None,
+                          return_dist=True)
     try:
         assert _np.isclose(MCSres[0][0], res[0],
                            atol=MCSres[0][1])
@@ -445,10 +447,12 @@ def run_tests():
         _sys.stderr.write("Spearman comparison failed.\n")
 
     # bootstrap only
-    res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
-                       Nboot=10000,
-                       Nperturb=None,
-                       return_dist=True)
+    res = pymccorrelation(data['x'], data['y'],
+                          dx=data['dx'], dy=data['dy'],
+                          Nboot=10000,
+                          coeff='spearmanr',
+                          Nperturb=None,
+                          return_dist=True)
     try:
         assert _np.isclose(MCSres[1][0], _np.mean(res[2]),
                            atol=MCSres[1][1])
@@ -457,10 +461,12 @@ def run_tests():
         _sys.stderr.write("Bootstrap only method comparison failed.\n")
 
     # perturbation only
-    res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
-                       Nboot=None,
-                       Nperturb=10000,
-                       return_dist=True)
+    res = pymccorrelation(data['x'], data['y'],
+                          dx=data['dx'], dy=data['dy'],
+                          coeff='spearmanr',
+                          Nboot=None,
+                          Nperturb=10000,
+                          return_dist=True)
     try:
         assert _np.isclose(MCSres[2][0], _np.mean(res[2]),
                            atol=MCSres[2][1])
@@ -469,10 +475,12 @@ def run_tests():
         _sys.stderr.write("Perturbation only method comparison failed.\n")
 
     # composite method
-    res = pymcspearman(data['x'], data['y'], dx=data['dx'], dy=data['dy'],
-                       Nboot=10000,
-                       Nperturb=10000,
-                       return_dist=True)
+    res = pymccorrelation(data['x'], data['y'],
+                          dx=data['dx'], dy=data['dy'],
+                          coeff='spearmanr',
+                          Nboot=10000,
+                          Nperturb=10000,
+                          return_dist=True)
     try:
         assert _np.isclose(MCSres[3][0], _np.mean(res[2]),
                            atol=MCSres[3][1])
