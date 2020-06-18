@@ -203,11 +203,11 @@ normal " + coeff + " output.")
     # if perturbing points, and we have censored data, set up an index
 
     if Nperturb is not None and (xlim is not None and ylim is not None):
-        do_per = np.logical_and(xlim == 0,
-                                ylim == 0)
+        do_per = _np.logical_and(xlim == 0,
+                                 ylim == 0)
     else:
-        do_per = np.ones(len(x),
-                         dtype=bool)
+        do_per = _np.ones(len(x),
+                          dtype=bool)
 
     if Nboot is not None:
         coeff = _np.zeros(Nboot)
@@ -222,6 +222,8 @@ normal " + coeff + " output.")
             yp = y[members[i, :]]
             if Nperturb is not None:
                 # perform 1 perturbation on top of the bootstrapping
+                xp = x.copy()
+                yp = y.copy()
                 xp[do_per], yp[do_per] = perturb_values(x[members[i, :]][do_per],
                                                         y[members[i, :]][do_per],
                                                         dx[members[i, :]][do_per],
@@ -234,7 +236,13 @@ normal " + coeff + " output.")
         coeff = _np.zeros(Nperturb)
         pval = _np.zeros(Nperturb)
         # generate Nperturb perturbed copies of the dataset
-        xp[do_per], yp[do_per] = perturb_values(x[do_per],
+        xp = _np.repeat([x],
+                        Nperturb,
+                        axis=0)
+        yp = _np.repeat([y],
+                        Nperturb,
+                        axis=0)
+        xp[:, do_per], yp[:, do_per] = perturb_values(x[do_per],
                                                 y[do_per],
                                                 dx[do_per],
                                                 dy[do_per],
