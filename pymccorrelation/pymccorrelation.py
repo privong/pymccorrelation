@@ -27,7 +27,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as _np
 import scipy.stats as _st
-from scipy.stats import spearmanr as _spearmanr
 
 
 def perturb_values(x, y, dx, dy, Nperturb=10000):
@@ -175,6 +174,13 @@ def pymccorrelation(x, y,
     if coeff not in coeffs_impl:
         raise ValueError("coeff must be one of " + ', '.join(coeffs_impl))
 
+    # set up the correct function for computing the requested correlation
+    # coefficient
+    if coeff == 'spearmanr':
+        from scipy.stats import spearmanr as cfunc
+    elif coeff == 'kendallt':
+        cfunc = kendall
+
     # censoring is only implemented for kendall's tau, return an error
     # if censored data is provided
     if coeff != 'kendallt' and \
@@ -192,7 +198,7 @@ support censored data.')
         _warnings.warn("No bootstrapping or perturbation applied. Returning \
 normal " + coeff + " output.")
         if coeff == 'spearmanr':
-            return _spearmanr(x, y)
+            return cfunc(x, y)
         elif coeff == 'kendallt':
             # pass along the xlim/ylim arrays, and the wrapper will handle
             # the presence of censored data
@@ -229,7 +235,7 @@ normal " + coeff + " output.")
                                                         dy[members[i, :]][do_per],
                                                         Nperturb=1)
 
-            coeff[i], pval[i] = _spearmanr(xp, yp)
+            coeff[i], pval[i] = cfunc(xp, yp)
 
     elif Nperturb is not None:
         coeff = _np.zeros(Nperturb)
@@ -249,12 +255,12 @@ normal " + coeff + " output.")
         # loop over each perturbed copy and compute the correlation
         # coefficient
         for i in range(Nperturb):
-            coeff[i], pval[i]= _spearmanr(xp[i, :], yp[i, :])
+            coeff[i], pval[i]= cfunc(xp[i, :], yp[i, :])
     else:
         import warnings as _warnings
         _warnings.warn("No bootstrapping or perturbation applied. Returning \
 normal spearman rank values.")
-        return _spearmanr(x, y)
+        return cfunc(x, y)
 
     fcoeff = _np.percentile(coeff, percentiles)
     fpval = _np.percentile(pval, percentiles)
