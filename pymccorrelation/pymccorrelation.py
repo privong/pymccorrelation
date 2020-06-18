@@ -306,78 +306,25 @@ def pymcspearman(x, y,
                            return_dist=return_dist)
 
 
-def pymckendall(x, y, xlim, ylim, dx=None, dy=None,
+def pymckendall(x, y,
+                xlim, ylim,
+                dx=None, dy=None,
                 Nboot=None,
                 Nperturb=None,
-                percentiles=(16,50,84), return_dist=False):
+                percentiles=(16, 50, 84),
+                return_dist=False):
     """
-    Compute Kendall tau coefficient with uncertainties using several methods.
-    Arguments:
-    x: independent variable array
-    y: dependent variable array
-    xlim: array indicating if x is upperlimit (1), lowerlimit(-1), or detection(0)
-    ylim: array indicating if x is upperlimit (1), lowerlimit(-1), or detection(0)
-    dx: uncertainties on independent variable (assumed to be normal)
-    dy: uncertainties on dependent variable (assumed to be normal)
-    Nboot: number of times to bootstrap (does not boostrap if =None)
-    Nperturb: number of times to perturb (does not perturb if =None)
-    percentiles: list of percentiles to compute from final distribution
-    return_dist: if True, return the full distribution of rho and p-value
+    Pass-through function to maintain backward compatibility with older
+    code
     """
 
-    if Nperturb is not None and dx is None and dy is None:
-        raise ValueError("dx or dy must be provided if perturbation is to be used.")
-    if len(x) != len(y):
-        raise ValueError("x and y must be the same length.")
-    if dx is not None and len(dx) != len(x):
-        raise ValueError("dx and x must be the same length.")
-    if dy is not None and len(dy) != len(y):
-        raise ValueError("dx and x must be the same length.")
-
-    Nvalues = len(x)
-
-    if Nboot is not None:
-        tau = _np.zeros(Nboot)
-        pval = _np.zeros(Nboot)
-        members = _np.random.randint(0, high=Nvalues-1, size=(Nboot,Nvalues)) #randomly resample
-        xp = x[members]
-        yp = y[members]
-        xplim = xlim[members] #get lim indicators for resampled x, y
-        yplim = ylim[members]
-        if Nperturb is not None:
-            xp[xplim==0] += _np.random.normal(size=_np.shape(xp[xplim==0])) * dx[members][xplim==0] #only perturb the detections
-            yp[yplim==0] += _np.random.normal(size=_np.shape(yp[yplim==0])) * dy[members][yplim==0] #only perturb the detections
-
-        #calculate tau and pval for each iteration
-        for i in range(Nboot):
-            tau[i], pval[i] = kendall(xp[i, :], yp[i, :],
-                                      xplim[i, :], yplim[i, :])
-
-    elif Nperturb is not None:
-        tau = _np.zeros(Nperturb)
-        pval = _np.zeros(Nperturb)
-        yp = [y] * Nperturb + _np.random.normal(size=(Nperturb, Nvalues)) * dy #perturb all data first
-        xp = [x] * Nperturb + _np.random.normal(size=(Nperturb, Nvalues)) * dx
-        yp[:, ylim!=0] = y[ylim!=0] #set upperlimits and lowerlimits to be unperturbed
-        xp[:, xlim!=0] = x[xlim!=0] #so only real detections are perturbed
-
-        for i in range(Nperturb):
-            tau[i], pval[i] = kendall(xp[i, :], yp[i, :],
-                                      xlim, ylim)
-
-    else:
-        import warnings as _warnings
-        _warnings.warn("No bootstrapping or perturbation applied. Returning \
-normal generalized kendall tau.")
-        tau, pval = kendall(x, y, xlim, ylim)
-        return tau, pval
-
-    ftau = _np.nanpercentile(tau, percentiles)
-    fpval = _np.nanpercentile(pval, percentiles)
-
-    if return_dist:
-        return ftau, fpval, tau, pval
-    return ftau, fpval
+    return pymccorrelation(x, y,
+                           dx=dx, dy=dy,
+                           Nboot=Nboot,
+                           Nperturb=Nperturb,
+                           coeff='kendallt',
+                           percentiles=percentiles,
+                           return_dist=return_dist)
 
 
 def run_tests():
