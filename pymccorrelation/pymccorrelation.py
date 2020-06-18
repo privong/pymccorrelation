@@ -27,6 +27,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as _np
 import scipy.stats as _st
+from scipy.stats import spearmanr as _spearmanr
+from scipy.stats import kendalltau as _kendalltau
 
 
 def perturb_values(x, y, dx, dy, Nperturb=10000):
@@ -63,8 +65,7 @@ def kendall(x, y,
     """
 
     if xlim is None and ylim is None:
-        from scipy.stats import kendalltau
-        return kendalltau(x, y)
+        return _kendalltau(x, y)
 
     return kendall_IFN86(x, y, xlim, ylim)
 
@@ -129,6 +130,22 @@ def kendall_IFN86(x, y,
     pval = _st.norm.sf(abs(z)) * 2
     return tau, pval
 
+
+def compute_corr(x, y,
+                 xlim=None, ylim=None,
+                 coeff=None):
+    """
+    Wrapper function to compute the correct correlation coefficient.
+    """
+
+    # set up the correct function for computing the requested correlation
+    # coefficient
+    if coeff == 'spearmanr':
+        return _spearmanr(x, y)
+    elif coeff == 'kendallt':
+        return kendall(x, y, xlim=xlim, ylim=ylim)
+
+
 def pymccorrelation(x, y,
                     dx=None, dy=None,
                     xlim=None, ylim=None,
@@ -174,13 +191,6 @@ def pymccorrelation(x, y,
     if coeff not in coeffs_impl:
         raise ValueError("coeff must be one of " + ', '.join(coeffs_impl))
 
-    # set up the correct function for computing the requested correlation
-    # coefficient
-    if coeff == 'spearmanr':
-        from scipy.stats import spearmanr as cfunc
-    elif coeff == 'kendallt':
-        cfunc = kendall
-
     # censoring is only implemented for kendall's tau, return an error
     # if censored data is provided
     if coeff != 'kendallt' and \
@@ -198,11 +208,11 @@ support censored data.')
         _warnings.warn("No bootstrapping or perturbation applied. Returning \
 normal " + coeff + " output.")
         if coeff == 'spearmanr':
-            return cfunc(x, y)
+            return compute_corr(x, y, coeff=coeff)
         elif coeff == 'kendallt':
             # pass along the xlim/ylim arrays, and the wrapper will handle
             # the presence of censored data
-            return kendall(x, y, xlim=xlim, ylim=ylim)
+            return compute_corr(x, y, xlim=xlim, ylim=ylim, coeff=coeff)
         #elif coeff == 'pearsonr':
 
     # if perturbing points, and we have censored data, set up an index
@@ -215,8 +225,8 @@ normal " + coeff + " output.")
                           dtype=bool)
 
     if Nboot is not None:
-        coeff = _np.zeros(Nboot)
-        pval = _np.zeros(Nboot)
+        coeffs = _np.zeros(Nboot)
+        pvals = _np.zeros(Nboot)
         # generate all the needed bootstrapping indices
         members = _np.random.randint(0, high=Nvalues-1,
                                      size=(Nboot, Nvalues))
@@ -235,11 +245,13 @@ normal " + coeff + " output.")
                                                         dy[members[i, :]][do_per],
                                                         Nperturb=1)
 
-            coeff[i], pval[i] = cfunc(xp, yp)
+            coeffs[i], pvals[i] = compute_corr(xp, yp,
+                                             xlim=xlim, ylim=ylim,
+                                             coeff=coeff)
 
     elif Nperturb is not None:
-        coeff = _np.zeros(Nperturb)
-        pval = _np.zeros(Nperturb)
+        coeffs = _np.zeros(Nperturb)
+        pvals = _np.zeros(Nperturb)
         # generate Nperturb perturbed copies of the dataset
         xp = _np.repeat([x],
                         Nperturb,
@@ -255,18 +267,22 @@ normal " + coeff + " output.")
         # loop over each perturbed copy and compute the correlation
         # coefficient
         for i in range(Nperturb):
-            coeff[i], pval[i]= cfunc(xp[i, :], yp[i, :])
+            coeffs[i], pvals[i] = compute_corr(xp[i, :], yp[i, :],
+                                               xlim=xlim, ylim=ylim,
+                                               coeff=coeff)
     else:
         import warnings as _warnings
         _warnings.warn("No bootstrapping or perturbation applied. Returning \
-normal spearman rank values.")
-        return cfunc(x, y)
+regular " + coeff + " values.")
+        return compute_corr(xp, yp,
+                            xlim=xlim, ylim=ylim,
+                            coeff=coeff)
 
-    fcoeff = _np.percentile(coeff, percentiles)
-    fpval = _np.percentile(pval, percentiles)
+    fcoeff = _np.percentile(coeffs, percentiles)
+    fpval = _np.percentile(pvals, percentiles)
 
     if return_dist:
-        return fcoeff, fpval, coeff, pval
+        return fcoeff, fpval, coeffs, pvals
     return fcoeff, fpval
 
 
@@ -447,17 +463,26 @@ def run_tests():
         _sys.stderr.write("Composite method comparison failed.\n")
 
     # test Kendall tau IFN86 for consistency with scipy
-    from scipy.stats import kendalltau
-    sres = kendalltau(data['x'], data['y'])
+    sres = _kendalltau(data['x'], data['y'])
     IFN86res = kendall_IFN86(data['x'], data['y'],
                              xlim=_np.zeros(len(data)),
                              ylim=_np.zeros(len(data)))
+    kt_wrap_res = pymccorrelation(data['x'], data['y'],
+                                  xlim=_np.zeros(len(data)),
+                                  ylim=_np.zeros(len(data)),
+                                  coeff='kendallt')
     try:
         assert _np.isclose(sres[0], IFN86res[0])
         assert _np.isclose(sres[1], IFN86res[1])
-        _sys.stdout.write("Passed Kendall tau comparison.\n")
+        _sys.stdout.write("Passed Kendall tau comparison with scipy.\n")
     except AssertionError:
         _sys.stderr.write("Kendall tau comparison with scipy failed.\n")
+    try:
+        assert _np.isclose(kt_wrap_res[0], IFN86res[0])
+        assert _np.isclose(kt_wrap_res[1], IFN86res[1])
+        _sys.stdout.write("Passed internal Kendall tau comparison.\n")
+    except AssertionError:
+        _sys.stderr.write("Internal Kendall tau comparison failed.\n")
 
 
 def main():
