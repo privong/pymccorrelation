@@ -95,7 +95,7 @@ def kendall_IFN86(x, y,
     #set up pair counters
     a = _np.zeros((num, num))
     b = _np.zeros((num, num))
-    
+
     for i in range(num):
         for j in range(num):
             if x[i] == x[j]:
@@ -106,7 +106,7 @@ def kendall_IFN86(x, y,
             else: #if x[i] is definitely < x[j], all other uncertain cases have aij=0
                 if (xlim[i] == 0 or xlim[i] == 1) and (xlim[j] == 0 or xlim[j] == -1):
                     a[i, j] = 1
-            
+
     for i in range(num):
         for j in range(num):
             if y[i] == y[j]:
@@ -115,14 +115,14 @@ def kendall_IFN86(x, y,
                 if (ylim[i] == 0 or ylim[i] == -1) and (ylim[j] == 0 or ylim[j] == 1):
                     b[i, j] = -1
             else:
-                 if (ylim[i] == 0 or ylim[i] == 0) and (ylim[j] == 0 or ylim[j] == -1):
+                if (ylim[i] == 0 or ylim[i] == 0) and (ylim[j] == 0 or ylim[j] == -1):
                     b[i, j] = 1
-                    
-            
+
+
     S = _np.sum(a * b)
     var = (4 / (num * (num - 1) * (num - 2))) * \
           (_np.sum(a * _np.sum(a, axis=1, keepdims=True)) - _np.sum(a * a)) * \
-          (_np.sum( b * _np.sum(b, axis=1, keepdims=True)) - _np.sum(b * b)) + \
+          (_np.sum(b * _np.sum(b, axis=1, keepdims=True)) - _np.sum(b * b)) + \
           (2 / (num * (num - 1))) * \
           _np.sum(a * a) * _np.sum(b * b)
     z = S/ _np.sqrt(var)
@@ -246,8 +246,8 @@ normal " + coeff + " output.")
                                                         Nperturb=1)
 
             coeffs[i], pvals[i] = compute_corr(xp, yp,
-                                             xlim=xlim, ylim=ylim,
-                                             coeff=coeff)
+                                               xlim=xlim, ylim=ylim,
+                                               coeff=coeff)
 
     elif Nperturb is not None:
         coeffs = _np.zeros(Nperturb)
@@ -260,10 +260,10 @@ normal " + coeff + " output.")
                         Nperturb,
                         axis=0)
         xp[:, do_per], yp[:, do_per] = perturb_values(x[do_per],
-                                                y[do_per],
-                                                dx[do_per],
-                                                dy[do_per],
-                                                Nperturb=Nperturb)
+                                                      y[do_per],
+                                                      dx[do_per],
+                                                      dy[do_per],
+                                                      Nperturb=Nperturb)
         # loop over each perturbed copy and compute the correlation
         # coefficient
         for i in range(Nperturb):
@@ -347,12 +347,12 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None,
         if Nperturb is not None:
             xp[xplim==0] += _np.random.normal(size=_np.shape(xp[xplim==0])) * dx[members][xplim==0] #only perturb the detections
             yp[yplim==0] += _np.random.normal(size=_np.shape(yp[yplim==0])) * dy[members][yplim==0] #only perturb the detections
-        
+
         #calculate tau and pval for each iteration
         for i in range(Nboot):
             tau[i], pval[i] = kendall(xp[i, :], yp[i, :],
                                       xplim[i, :], yplim[i, :])
-       
+
     elif Nperturb is not None:
         tau = _np.zeros(Nperturb)
         pval = _np.zeros(Nperturb)
@@ -360,7 +360,7 @@ def pymckendall(x, y, xlim, ylim, dx=None, dy=None,
         xp = [x] * Nperturb + _np.random.normal(size=(Nperturb, Nvalues)) * dx
         yp[:, ylim!=0] = y[ylim!=0] #set upperlimits and lowerlimits to be unperturbed
         xp[:, xlim!=0] = x[xlim!=0] #so only real detections are perturbed
-            
+
         for i in range(Nperturb):
             tau[i], pval[i] = kendall(xp[i, :], yp[i, :],
                                       xlim, ylim)
