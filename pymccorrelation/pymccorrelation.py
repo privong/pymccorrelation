@@ -171,7 +171,6 @@ def pymccorrelation(x, y,
     if dy is not None and len(dy) != len(y):
         raise ValueError("dx and x must be the same length.")
 
-    # TODO: add checks for censoring when not doing kendall tau
     coeffs_impl = ['spearmanr', 'kendallt']
     # make sure an implemented correlation coefficient type is requested
     if coeff not in coeffs_impl:
