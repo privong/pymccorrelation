@@ -142,10 +142,14 @@ def compute_corr(x, y,
     # set up the correct function for computing the requested correlation
     # coefficient
     if coeff == 'spearmanr':
+        # pass to scipy function
         return _spearmanr(x, y)
     elif coeff == 'kendallt':
+        # pass to our kendall tau function, in case we need to handle
+        # censored data
         return kendall(x, y, xlim=xlim, ylim=ylim)
     elif coeff == 'pearsonr':
+        # pass to scipy function
         return _pearsonr(x, y)
 
 
