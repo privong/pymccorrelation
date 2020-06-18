@@ -27,6 +27,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import numpy as _np
 import scipy.stats as _st
+from scipy.stats import spearmanr as _pearsonr
 from scipy.stats import spearmanr as _spearmanr
 from scipy.stats import kendalltau as _kendalltau
 
@@ -144,6 +145,8 @@ def compute_corr(x, y,
         return _spearmanr(x, y)
     elif coeff == 'kendallt':
         return kendall(x, y, xlim=xlim, ylim=ylim)
+    elif coeff == 'pearsonr':
+        return _pearsonr(x, y)
 
 
 def pymccorrelation(x, y,
@@ -170,7 +173,7 @@ def pymccorrelation(x, y,
     Nboot: number of times to bootstrap (does not boostrap if =None)
     Nperturb: number of times to perturb (does not perturb if =None)
     coeff: Correlation coefficient to compute. Must be one of:
-        ['spearmanr', 'kendallt']
+        ['spearmanr', 'kendallt', 'pearsonr']
     percentiles: list of percentiles to compute from final distribution
     return_dist: if True, return the full distribution of rho and p-value
     """
@@ -186,7 +189,7 @@ def pymccorrelation(x, y,
     if dy is not None and len(dy) != len(y):
         raise ValueError("dx and x must be the same length.")
 
-    coeffs_impl = ['spearmanr', 'kendallt']
+    coeffs_impl = ['spearmanr', 'kendallt', 'pearsonr']
     # make sure an implemented correlation coefficient type is requested
     if coeff not in coeffs_impl:
         raise ValueError("coeff must be one of " + ', '.join(coeffs_impl))
@@ -213,7 +216,8 @@ normal " + coeff + " output.")
             # pass along the xlim/ylim arrays, and the wrapper will handle
             # the presence of censored data
             return compute_corr(x, y, xlim=xlim, ylim=ylim, coeff=coeff)
-        #elif coeff == 'pearsonr':
+        elif coeff == 'pearsonr':
+            return compute_corr(x, y, coeff=coeff)
 
     # if perturbing points, and we have censored data, set up an index
 
