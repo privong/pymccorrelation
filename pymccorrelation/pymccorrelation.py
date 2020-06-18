@@ -439,6 +439,17 @@ def run_tests():
     except AssertionError:
         _sys.stderr.write("Internal Kendall tau comparison failed.\n")
 
+    # test pearson r wrapper
+    wrap_res = pymccorrelation(data['x'], data['y'],
+                               coeff='pearsonr',
+                               return_dist=False)
+    res = _pearsonr(data['x'], data['y'])
+    try:
+        assert _np.isclose(wrap_res[0], res[0])
+        assert _np.isclose(wrap_res[1], res[1])
+        _sys.stdout.write("Passed Pearson r wrapper check.\n")
+    except AssertionError:
+        _sys.stderr.write("Pearson r wrapper check failed.\n")
 
 def main():
     """
