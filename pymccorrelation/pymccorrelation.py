@@ -130,7 +130,6 @@ def kendall_IFN86(x, y,
     pval = _st.norm.sf(abs(z)) * 2
     return tau, pval
 
-
 def pymccorrelation(x, y,
                     dx=None, dy=None,
                     xlim=None, ylim=None,
@@ -265,79 +264,24 @@ normal spearman rank values.")
     return fcoeff, fpval
 
 
-def pymcspearman(x, y, dx=None, dy=None,
+def pymcspearman(x, y,
+                 dx=None, dy=None,
                  Nboot=None,
                  Nperturb=None,
-                 percentiles=(16, 50, 84), return_dist=False):
+                 percentiles=(16, 50, 84),
+                 return_dist=False):
     """
-    Compute spearman rank coefficient with uncertainties using several methods.
-    Arguments:
-    x: independent variable array
-    y: dependent variable array
-    dx: uncertainties on independent variable (assumed to be normal)
-    dy: uncertainties on dependent variable (assumed to be normal)
-    Nboot: number of times to bootstrap (does not boostrap if =None)
-    Nperturb: number of times to perturb (does not perturb if =None)
-    percentiles: list of percentiles to compute from final distribution
-    return_dist: if True, return the full distribution of rho and p-value
+    Pass-through function to maintain backward compatibility with older
+    code
     """
 
-    if Nperturb is not None and dx is None and dy is None:
-        raise ValueError("dx or dy must be provided if perturbation is to be used.")
-    if len(x) != len(y):
-        raise ValueError("x and y must be the same length.")
-    if dx is not None and len(dx) != len(x):
-        raise ValueError("dx and x must be the same length.")
-    if dy is not None and len(dy) != len(y):
-        raise ValueError("dx and x must be the same length.")
-
-    rho = []
-    rho = []
-    pval = []
-
-    Nvalues = len(x)
-
-    if Nboot is not None:
-        # generate all the needed bootstrapping indices
-        members = _np.random.randint(0, high=Nvalues-1,
-                                     size=(Nboot, Nvalues))
-        # loop over sets of bootstrapping indices and compute
-        # correlation coefficient
-        for i in range(Nboot):
-            xp = x[members[i, :]]
-            yp = y[members[i, :]]
-            if Nperturb is not None:
-                # return only 1 perturbation on top of the bootstrapping
-                xp, yp = perturb_values(x[members[i, :]], y[members[i, :]],
-                                        dx[members[i, :]], dy[members[i, :]],
-                                        Nperturb=1)
-
-            trho, tpval = _spearmanr(xp, yp)
-
-            rho.append(trho)
-            pval.append(tpval)
-    elif Nperturb is not None:
-        # generate Nperturb perturbed copies of the dataset
-        xp, yp = perturb_values(x, y, dx, dy, Nperturb=Nperturb)
-        # loop over each perturbed copy and compute the correlation
-        # coefficient
-        for i in range(Nperturb):
-            trho, tpval = _spearmanr(xp[i, :], yp[i, :])
-
-            rho.append(trho)
-            pval.append(tpval)
-    else:
-        import warnings as _warnings
-        _warnings.warn("No bootstrapping or perturbation applied. Returning \
-normal spearman rank values.")
-        return _spearmanr(x, y)
-
-    frho = _np.percentile(rho, percentiles)
-    fpval = _np.percentile(pval, percentiles)
-
-    if return_dist:
-        return frho, fpval, rho, pval
-    return frho, fpval
+    return pymccorrelation(x, y,
+                           dx=dx, dy=dy
+                           Nboot=Nboot,
+                           Nperturb=Nperturb,
+                           coeff='spearmanr',
+                           percentiles=percentiles,
+                           return_dist=return_dist)
 
 
 def pymckendall(x, y, xlim, ylim, dx=None, dy=None,
