@@ -4,10 +4,19 @@ A tool to calculate correlation coefficients for data, using bootstrapping and/o
 This was initially a python implementation of the [Curran (2014)](https://arxiv.org/abs/1411.3816) method for calculating uncertainties on Spearman's Rank Correlation Coefficient, but has since been expanded.
 Curran's original C implementation is [`MCSpearman`](https://github.com/PACurran/MCSpearman/) ([ASCL entry](http://ascl.net/1504.008)).
 
+Currently the following correlation coefficients can be calculated (with bootstrapping and/or perturbation):
+
+* [Pearson's r](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient)
+* [Spearman's rho](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient)
+* [Kendall's tau](https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient)
+
+Kendall's tau can also calculated when some of the data are left/right censored, following the method described by [Isobe+1986](https://ui.adsabs.harvard.edu/abs/1986ApJ...306..490I/abstract).
+
 ## Status
 
-All three modes (bootstrapping only, perturbing only, and composite) have been tested against Curran's code using the test data provided with `MCSpearman`.
-The (not very stringent) tests can be run using the `run_tests()` function or by running `python pymccorrelation.py`.
+All three methods of computing (bootstrapping only, perturbing only, and composite) have been tested against Curran's code using the test data provided with `MCSpearman`.
+Unit tests can be run using the `run_tests()` function or by running `python pymccorrelation.py`.
+In the case of Speaman's rho, these are compared with the reesults of Curran's C implementation.
 
 The python implementation is currently noticeably slower than the original C implementation.
 For the test data (53 entries) and 1e5 iterations:
