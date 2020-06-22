@@ -12,11 +12,48 @@ Currently the following correlation coefficients can be calculated (with bootstr
 
 Kendall's tau can also calculated when some of the data are left/right censored, following the method described by [Isobe+1986](https://ui.adsabs.harvard.edu/abs/1986ApJ...306..490I/abstract).
 
+## Usage
+
+`pymccorrelation` exports a single function to the user (also `pymccorrelation`).
+
+```
+from pymccorrelation import pymccorrelation
+
+[... load your data ...]
+```
+
+The correlation coefficient can be one of `pearsonr`, `spearmanr`, or `kendallt`.
+
+For example, to compute the Pearson's r for a sample, using 1000 bootstrapping iterations to estimate the uncertainties:
+
+```
+res = pymccorrelation(data['x'], data['y]',
+                      coeff='pearsonr',
+                      Nboot=1000)
+```
+
+The output, `res` is a tuple of length 2, and the two elements are:
+
+* numpy array with the correlation coefficient (Pearson's r, in this case) percentiles (by default 16%, 50%, and 84%)
+* numpy array with the p-value percentiles (by default 16%, 50%, and 84%)
+
+The percentile ranges can be adjusted using the `percentiles` keyword argument.
+
+Additionally, if the full posterior distribution is desired, that can be obtained by setting the `return_dist` keyword argument to `True`.
+In that case, `res` becomes a tuple of length four:
+
+* numpy array with the correlation coefficient (Pearson's r, in this case) percentiles (by default 16%, 50%, and 84%)
+* numpy array with the p-value percentiles (by default 16%, 50%, and 84%)
+* numpy array with full set of correlation coefficient values from the bootstrapping
+* numpy array with the full set of p-values computed from the bootstrapping
+
+Please see the docstring for the full set of arguments and information including measurement uncertainties (necessary for point perturbation) and for marking censored data.
+
 ## Status
 
 All three methods of computing (bootstrapping only, perturbing only, and composite) have been tested against Curran's code using the test data provided with `MCSpearman`.
 Unit tests can be run using the `run_tests()` function or by running `python pymccorrelation.py`.
-In the case of Speaman's rho, these are compared with the reesults of Curran's C implementation.
+In the case of Spearman's rho, these are compared with the results of Curran's C implementation.
 
 The python implementation is currently noticeably slower than the original C implementation.
 For the test data (53 entries) and 1e5 iterations:
