@@ -239,7 +239,7 @@ normal " + coeff + " output.")
         pvals = _np.zeros(Nboot)
         rng = _np.random.default_rng()
         # generate all the needed bootstrapping indices
-        members = rng.integers(0, high=Nvalues-1,
+        members = rng.integers(0, high=Nvalues,
                                size=(Nboot, Nvalues))
         # loop over sets of bootstrapping indices and compute
         # correlation coefficient
