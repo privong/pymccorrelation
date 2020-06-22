@@ -44,12 +44,14 @@ def perturb_values(x, y, dx, dy, Nperturb=10000):
 
     Nvalues = len(x)
 
-    xp = _np.random.normal(loc=x,
-                           scale=dx,
-                           size=(Nperturb, Nvalues))
-    yp = _np.random.normal(loc=y,
-                           scale=dy,
-                           size=(Nperturb, Nvalues))
+    rng = _np.random.default_rng()
+
+    xp = rng.normal(loc=x,
+                    scale=dx,
+                    size=(Nperturb, Nvalues))
+    yp = rng.normal(loc=y,
+                    scale=dy,
+                    size=(Nperturb, Nvalues))
 
     if Nperturb == 1:
         xp = xp.flatten()
@@ -235,9 +237,10 @@ normal " + coeff + " output.")
     if Nboot is not None:
         coeffs = _np.zeros(Nboot)
         pvals = _np.zeros(Nboot)
+        rng = _np.random.default_rng()
         # generate all the needed bootstrapping indices
-        members = _np.random.randint(0, high=Nvalues-1,
-                                     size=(Nboot, Nvalues))
+        members = rng.integers(0, high=Nvalues-1,
+                               size=(Nboot, Nvalues))
         # loop over sets of bootstrapping indices and compute
         # correlation coefficient
         for i in range(Nboot):
