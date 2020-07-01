@@ -1,1 +1,1 @@
-from .pymccorrelation import pymccorrelation
+from .pymccorrelation import pymccorrelation, __version__

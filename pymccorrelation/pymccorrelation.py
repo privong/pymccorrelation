@@ -25,6 +25,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+__version__ = '0.2.1'
+
 import numpy as _np
 import scipy.stats as _st
 from scipy.stats import spearmanr as _pearsonr
