@@ -18,9 +18,17 @@ Kendall's tau can also calculated when some of the data are left/right censored,
 - scipy
 - numpy
 
+## Installation
+
+`pymccorrelation` is available via PyPi and can be installed with:
+
+```
+pip install pymccorrelation
+```
+
 ## Usage
 
-`pymccorrelation` exports a single function to the user (also `pymccorrelation`).
+`pymccorrelation` exports a single function to the user (also called `pymccorrelation`).
 
 ```
 from pymccorrelation import pymccorrelation
