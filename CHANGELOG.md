@@ -2,6 +2,10 @@
 
 ## 0.2.x
 
+### 0.2.1 (2020 July 01)
+
+- Add `setup.py` and package for pypi release.
+
 ### 0.2.0 (2020 June 22)
 
 #### Enhancements
