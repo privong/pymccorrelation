@@ -2,6 +2,12 @@
 
 ## 0.2.x
 
+### 0.2.2 (2020 July 07)
+
+#### Bugfixes
+
+- Pearson's r was incorrectly imported as spearman's rho. The import has been fixed.
+
 ### 0.2.1 (2020 July 01)
 
 - Add `setup.py` and package for pypi release.

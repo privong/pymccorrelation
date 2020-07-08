@@ -29,7 +29,7 @@ __version__ = '0.2.1'
 
 import numpy as _np
 import scipy.stats as _st
-from scipy.stats import spearmanr as _pearsonr
+from scipy.stats import pearsonr as _pearsonr
 from scipy.stats import spearmanr as _spearmanr
 from scipy.stats import kendalltau as _kendalltau
 
@@ -166,7 +166,7 @@ def pymccorrelation(x, y,
                     percentiles=(16, 50, 84),
                     return_dist=False):
     """
-    Compute spearman rank coefficient with uncertainties using several methods.
+    Compute a correlation coefficient with uncertainties using several methods.
     Arguments:
     x: independent variable array
     y: dependent variable array
