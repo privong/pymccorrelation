@@ -63,3 +63,16 @@ In that case, `res` becomes a tuple of length four:
 
 Please see the docstring for the full set of arguments and information including measurement uncertainties (necessary for point perturbation) and for marking censored data.
 
+## Citing
+
+If you use this script as part of your research, I encourage you to cite the following papers:
+
+* [Curran 2014](https://arxiv.org/abs/1411.3816): Describes the technique and application to Spearman's rank correlation coefficient
+* [Privon+ 2020](https://ui.adsabs.harvard.edu/abs/2020ApJ...893..149P/abstract): First use of this software, as `pymcspearman`.
+
+Please also [cite scipy and numpy](https://www.scipy.org/citing.html).
+
+
+If your work uses Kendall's tau, with censored data please also cite:
+
+* [Isobe+ 1986](https://ui.adsabs.harvard.edu/abs/1986ApJ...306..490I/abstract): Censoring of data when computing Kendall's rank correlation coefficient.
