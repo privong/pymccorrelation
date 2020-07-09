@@ -2,7 +2,12 @@
 
 ## 0.2.x
 
-### 0.2.2 (2020 July 07)
+### 0.2.3 (in preparation)
+
+- fix description of `return_dist` behavior in doctrsing for `pymccorrelation`
+- Amend changelog to fix release date for v0.2.2.
+
+### 0.2.2 (2020 July 08)
 
 #### Bugfixes
 

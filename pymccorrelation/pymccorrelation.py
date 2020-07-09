@@ -183,7 +183,8 @@ def pymccorrelation(x, y,
     coeff: Correlation coefficient to compute. Must be one of:
         ['spearmanr', 'kendallt', 'pearsonr']
     percentiles: list of percentiles to compute from final distribution
-    return_dist: if True, return the full distribution of rho and p-value
+    return_dist: if True, return the full distribution of the correlation
+        coefficient and its and p-value
     """
 
     # do some checks on input array lengths and ensure the necessary data
