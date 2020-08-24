@@ -34,6 +34,20 @@ from scipy.stats import spearmanr as _spearmanr
 from scipy.stats import kendalltau as _kendalltau
 
 
+def valid_lims(lims):
+    """
+    Check limits to ensure all values are in the set [0, 1, -1]
+    If limit array is valid, return True. Otherwise return False
+    """
+
+    unilims = _np.unique(lims)
+
+    for l in unilims:
+        if l not in [0, 1, -1]:
+            return False
+    return True
+
+
 def perturb_values(x, y, dx, dy, Nperturb=10000):
     """
     For input points (x, y) with errors (dx, dy) return Nperturb sets of
@@ -71,6 +85,10 @@ def kendall(x, y,
 
     if xlim is None and ylim is None:
         return _kendalltau(x, y)
+
+    # Ensure the limit arrays are valid
+    assert valid_lims(xlim)
+    assert valid_lims(ylim)
 
     return kendall_IFN86(x, y, xlim, ylim)
 

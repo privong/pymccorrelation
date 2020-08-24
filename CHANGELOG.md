@@ -6,6 +6,7 @@
 
 - fix description of `return_dist` behavior in doctrsing for `pymccorrelation`
 - Amend changelog to fix release date for v0.2.2.
+- Check x/y limit arrays to ensure they contain sensible values.
 
 ### 0.2.2 (2020 July 08)
 
