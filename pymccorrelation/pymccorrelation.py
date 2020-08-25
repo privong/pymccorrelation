@@ -359,6 +359,7 @@ def pymckendall(x, y,
 
     return pymccorrelation(x, y,
                            dx=dx, dy=dy,
+                           xlim=xlim, ylim=ylim,
                            Nboot=Nboot,
                            Nperturb=Nperturb,
                            coeff='kendallt',
