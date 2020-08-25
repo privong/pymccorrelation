@@ -2,7 +2,7 @@
 
 ## 0.2.x
 
-### 0.2.3 (in preparation)
+### 0.2.3 (25 August 2020)
 
 #### Enhancements
 
