@@ -87,8 +87,8 @@ def kendall(x, y,
         return _kendalltau(x, y)
 
     # Ensure the limit arrays are valid
-    assert valid_lims(xlim)
-    assert valid_lims(ylim)
+    assert valid_lims(xlim), "x limit flags are not all valid"
+    assert valid_lims(ylim), "y limit flags are not all valid"
 
     return kendall_IFN86(x, y, xlim, ylim)
 
