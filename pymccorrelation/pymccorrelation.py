@@ -48,15 +48,25 @@ def valid_lims(lims):
     return True
 
 
+def validate_inputs(a, b, c, d):
+    """
+    Make sure the data arrays are all the same length
+    """
+
+    assert len(a) == len(b), "x and y must be the same length"
+    assert len(c) == len(d), "the error/limit arrays must be the same length"
+    assert len(a) == len(c), "the data and error/limit arrays must be the same length"
+
+    return True
+
+
 def perturb_values(x, y, dx, dy, Nperturb=10000):
     """
     For input points (x, y) with errors (dx, dy) return Nperturb sets of
     values draw from Gaussian distributions centered at x+-dx and y+-dy.
     """
 
-    assert len(x) == len(y)
-    assert len(dx) == len(dy)
-    assert len(x) == len(dx)
+    validate_inputs(x, y, dx, dy)
 
     Nvalues = len(x)
 
@@ -109,10 +119,7 @@ def kendall_IFN86(x, y,
 
     #TODO: vectorize this function, very slow
 
-    # the argument variable should have the same length
-    assert len(x) == len(y)
-    assert len(xlim) == len(ylim)
-    assert len(x) == len(xlim)
+    validate_inputs(x, y, xlim, ylim)
 
     num = len(x)
     #set up pair counters
