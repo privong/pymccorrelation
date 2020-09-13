@@ -27,11 +27,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 __version__ = '0.2.4'
 
+import warnings as _warnings
 import numpy as _np
 import scipy.stats as _st
 from scipy.stats import pearsonr as _pearsonr
 from scipy.stats import spearmanr as _spearmanr
 from scipy.stats import kendalltau as _kendalltau
+
+_warnings.simplefilter('default')
 
 
 def valid_lims(lims):
@@ -241,7 +244,6 @@ support censored data.')
     # if no bootstrapping or correlation is requested, we can just
     # report the normal correlation coefficient values
     if Nboot is None and Nperturb is None:
-        import warnings as _warnings
         _warnings.warn("No bootstrapping or perturbation applied. Returning \
 normal " + coeff + " output.")
         if coeff == 'spearmanr':
@@ -321,7 +323,6 @@ normal " + coeff + " output.")
                                                xlim=xlim, ylim=ylim,
                                                coeff=coeff)
     else:
-        import warnings as _warnings
         _warnings.warn("No bootstrapping or perturbation applied. Returning \
 regular " + coeff + " values.")
         return compute_corr(xp, yp,
@@ -367,6 +368,10 @@ def pymckendall(x, y,
     Pass-through function to maintain backward compatibility with older
     code
     """
+
+    _warnings.warn("The pymckendall() interface will be removed after the \
+0.3.x series. Please update your code to use pymccorrelation().",
+                  DeprecationWarning)
 
     return pymccorrelation(x, y,
                            dx=dx, dy=dy,

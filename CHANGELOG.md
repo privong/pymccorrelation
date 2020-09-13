@@ -2,6 +2,12 @@
 
 ## 0.2.x
 
+### 0.2.5 (in preparation)
+
+#### Other
+
+- `pymckendall()` is deprecated and will be removed after the 0.3.x series.
+
 ### 0.2.4 (26 May 2021)
 
 #### Bugfixes
