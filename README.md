@@ -41,7 +41,7 @@ The correlation coefficient can be one of `pearsonr`, `spearmanr`, or `kendallt`
 For example, to compute the Pearson's r for a sample, using 1000 bootstrapping iterations to estimate the uncertainties:
 
 ```
-res = pymccorrelation(data['x'], data['y]',
+res = pymccorrelation(data['x'], data['y'],
                       coeff='pearsonr',
                       Nboot=1000)
 ```
