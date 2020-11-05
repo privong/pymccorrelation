@@ -73,6 +73,6 @@ If you use this script as part of your research, I encourage you to cite the fol
 Please also [cite scipy and numpy](https://www.scipy.org/citing.html).
 
 
-If your work uses Kendall's tau, with censored data please also cite:
+If your work uses Kendall's tau with censored data please also cite:
 
 * [Isobe+ 1986](https://ui.adsabs.harvard.edu/abs/1986ApJ...306..490I/abstract): Censoring of data when computing Kendall's rank correlation coefficient.
