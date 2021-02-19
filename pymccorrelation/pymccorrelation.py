@@ -86,6 +86,38 @@ def perturb_values(x, y, dx, dy, Nperturb=10000):
     return xp, yp
 
 
+
+def pair_rankings(arr, lims):
+    """
+    Calculate pair rank matrices for arr, considering the limits in lim.
+    This is a component of the Isobe+1986 model.
+
+    Parameters:
+        arr: variable (1-D array)
+        lims: censoring information for this variable. Values of
+            (-1, 1, 0) correspond to (lower limit, upper limit, detection)
+    """
+
+    assert len(arr) == len(lims), "Data array and limits must have the same \
+length."
+
+    num = len(arr)
+    pair_ranks = _np.zeros((num, num))
+
+    for i in range(num):
+        for j in range(num):
+            if arr[i] == arr[j]:
+                pair_ranks[i, j] = 0
+            elif arr[i] > arr[j]: #if arr[i] is definitely > arr[j]
+                if (lims[i] == 0 or lims[i] == -1) and (lims[j] == 0 or lims[j] == 1):
+                    pair_ranks[i, j] = -1
+            else: #if arr[i] is definitely < arr[j], all other uncertain cases have aij=0
+                if (lims[i] == 0 or lims[i] == 1) and (lims[j] == 0 or lims[j] == -1):
+                    pair_ranks[i, j] = 1
+
+    return pair_ranks
+
+
 def kendall(x, y,
             xlim=None, ylim=None):
     """
@@ -126,28 +158,8 @@ def kendall_IFN86(x, y,
     a = _np.zeros((num, num))
     b = _np.zeros((num, num))
 
-    for i in range(num):
-        for j in range(num):
-            if x[i] == x[j]:
-                a[i, j] = 0
-            elif x[i] > x[j]: #if x[i] is definitely > x[j]
-                if (xlim[i] == 0 or xlim[i] == -1) and (xlim[j] == 0 or xlim[j] == 1):
-                    a[i, j] = -1
-            else: #if x[i] is definitely < x[j], all other uncertain cases have aij=0
-                if (xlim[i] == 0 or xlim[i] == 1) and (xlim[j] == 0 or xlim[j] == -1):
-                    a[i, j] = 1
-
-    for i in range(num):
-        for j in range(num):
-            if y[i] == y[j]:
-                b[i, j] = 0
-            elif y[i] > y[j]:
-                if (ylim[i] == 0 or ylim[i] == -1) and (ylim[j] == 0 or ylim[j] == 1):
-                    b[i, j] = -1
-            else:
-                if (ylim[i] == 0 or ylim[i] == 0) and (ylim[j] == 0 or ylim[j] == -1):
-                    b[i, j] = 1
-
+    a = pair_rankings(x, xlim)
+    b = pair_rankings(y, ylim)
 
     S = _np.sum(a * b)
     var = (4 / (num * (num - 1) * (num - 2))) * \
