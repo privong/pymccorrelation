@@ -106,14 +106,16 @@ length."
 
     for i in range(num):
         for j in range(num):
-            if arr[i] == arr[j]:
-                pair_ranks[i, j] = 0
-            elif arr[i] > arr[j]: #if arr[i] is definitely > arr[j]
+            # check if arr[i] is definitely > arr[j]
+            if arr[i] > arr[j]:
                 if (lims[i] == 0 or lims[i] == -1) and (lims[j] == 0 or lims[j] == 1):
                     pair_ranks[i, j] = -1
-            else: #if arr[i] is definitely < arr[j], all other uncertain cases have aij=0
+            # otherwise, check if arr[i] is definitely < arr[j]
+            elif arr[i] < arr[j]:
                 if (lims[i] == 0 or lims[i] == 1) and (lims[j] == 0 or lims[j] == -1):
                     pair_ranks[i, j] = 1
+            # all other uncertain cases have aij=0, so we don't need to check
+            # because the matrix is initialized to be all zeros
 
     return pair_ranks
 
