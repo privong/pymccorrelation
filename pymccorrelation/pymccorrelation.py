@@ -105,17 +105,23 @@ length."
     pair_ranks = _np.zeros((num, num))
 
     for i in range(num):
-        for j in range(num):
-            # check if arr[i] is definitely > arr[j]
-            if arr[i] > arr[j]:
-                if (lims[i] == 0 or lims[i] == -1) and (lims[j] == 0 or lims[j] == 1):
-                    pair_ranks[i, j] = -1
-            # otherwise, check if arr[i] is definitely < arr[j]
-            elif arr[i] < arr[j]:
-                if (lims[i] == 0 or lims[i] == 1) and (lims[j] == 0 or lims[j] == -1):
-                    pair_ranks[i, j] = 1
-            # all other uncertain cases have aij=0, so we don't need to check
-            # because the matrix is initialized to be all zeros
+        # set flags for ith value definitely greater than other values
+        ilimflag = lims[i] == 0 or lims[i] == -1
+        gtrthan = arr[i] > arr
+        def_gtrthan = _np.logical_or(lims == 0,
+                                     lims == 1)
+        pair_ranks[i, gtrthan & ilimflag & def_gtrthan] = -1
+
+        # set flags for ith value definiteily less than other values
+        ilimflag = lims[i] == 0 or lims[i] == 1
+        lssthan = arr[i] < arr
+        def_lssthan = _np.logical_or(lims == 0,
+                                     lims == -1)
+        pair_ranks[i, lssthan & ilimflag & def_lssthan] = 1
+
+        # if neither of the above 2 criteria are met, then the values are
+        # either equal or cannot be determined to be greater or less than
+        # so we can leave them equal to zero in the rank matrix
 
     return pair_ranks
 
