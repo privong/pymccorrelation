@@ -100,21 +100,26 @@ length."
     num = len(arr)
     pair_ranks = _np.zeros((num, num))
     
+    #broadcast array into two matrices for element wise comparison
     arr_j = _np.tile(arr, (num,1))
     arr_i = _np.transpose(arr_j)
     
+    #broadcast limits into two matrices for element wise boolean operation
     lim_j = _np.tile(lims, (num,1))
     lim_i = _np.transpose(lim_j)
     
+    #(lim[i] == 0 or lim[i] == -1) and ((lim[j] == 0 or lim[j] == 1))
     lim_j_gtr=_np.logical_or(lim_j == 1,lim_j==0)
     lim_i_gtr=_np.logical_or(lim_i == -1,lim_i==0)
+    lim_gtr=_np.logical_and(lim_j_gtr,lim_i_gtr)
+    
+    #(lim[i] == 0 or lim[i] == 1) and ((lim[j] == 0 or lim[j] == -1))
     lim_j_ls=_np.logical_or(lim_j == -1,lim_j==0)
     lim_i_ls=_np.logical_or(lim_i == 1,lim_i==0)
-    lim_gtr=_np.logical_and(lim_j_gtr,lim_i_gtr)
     lim_ls=_np.logical_and(lim_j_ls,lim_i_ls)
     
-    pair_ranks[(arr_i > arr_j) & lim_gtr]=-1
-    pair_ranks[(arr_i < arr_j) & lim_ls]=1
+    pair_ranks[(arr_i > arr_j) & lim_gtr]=-1 #arr[i] definitely > arr[j]
+    pair_ranks[(arr_i < arr_j) & lim_ls]=1 #arr[i] definitely < arr[j]
     
     return pair_ranks
 
