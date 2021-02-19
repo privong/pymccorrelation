@@ -86,6 +86,39 @@ def perturb_values(x, y, dx, dy, Nperturb=10000):
     return xp, yp
 
 
+def pair_rankings_matrix(arr, lims):
+    """
+    Calculate pair rank matrices for arr, considering the limits in lim.
+    This is a component of the Isobe+1986 model.
+    Parameters:
+        arr: variable (1-D array)
+        lims: censoring information for this variable. Values of
+            (-1, 1, 0) correspond to (lower limit, upper limit, detection)
+    """
+    assert len(arr) == len(lims), "Data array and limits must have the same \
+length."
+    num = len(arr)
+    pair_ranks = _np.zeros((num, num))
+    
+    arr_j = _np.tile(arr, (num,1))
+    arr_i = _np.transpose(arr_j)
+    
+    lim_j = _np.tile(lims, (num,1))
+    lim_i = _np.transpose(lim_j)
+    
+    lim_j_gtr=_np.logical_or(lim_j == 1,lim_j==0)
+    lim_i_gtr=_np.logical_or(lim_i == -1,lim_i==0)
+    lim_j_ls=_np.logical_or(lim_j == -1,lim_j==0)
+    lim_i_ls=_np.logical_or(lim_i == 1,lim_i==0)
+    lim_gtr=_np.logical_and(lim_j_gtr,lim_i_gtr)
+    lim_ls=_np.logical_and(lim_j_ls,lim_i_ls)
+    
+    pair_ranks[(arr_i > arr_j) & lim_gtr]=-1
+    pair_ranks[(arr_i < arr_j) & lim_ls]=1
+    
+    return pair_ranks
+
+
 def kendall(x, y,
             xlim=None, ylim=None):
     """
@@ -108,7 +141,6 @@ def kendall_IFN86(x, y,
     """
     Generalized kendall tau test described in Isobe, Feigelson & Nelson 1986
     ApJ 306, 490-507.
-
     Parameters:
         x: independent variable
         y: dependent variable
@@ -123,31 +155,8 @@ def kendall_IFN86(x, y,
 
     num = len(x)
     #set up pair counters
-    a = _np.zeros((num, num))
-    b = _np.zeros((num, num))
-
-    for i in range(num):
-        for j in range(num):
-            if x[i] == x[j]:
-                a[i, j] = 0
-            elif x[i] > x[j]: #if x[i] is definitely > x[j]
-                if (xlim[i] == 0 or xlim[i] == -1) and (xlim[j] == 0 or xlim[j] == 1):
-                    a[i, j] = -1
-            else: #if x[i] is definitely < x[j], all other uncertain cases have aij=0
-                if (xlim[i] == 0 or xlim[i] == 1) and (xlim[j] == 0 or xlim[j] == -1):
-                    a[i, j] = 1
-
-    for i in range(num):
-        for j in range(num):
-            if y[i] == y[j]:
-                b[i, j] = 0
-            elif y[i] > y[j]:
-                if (ylim[i] == 0 or ylim[i] == -1) and (ylim[j] == 0 or ylim[j] == 1):
-                    b[i, j] = -1
-            else:
-                if (ylim[i] == 0 or ylim[i] == 0) and (ylim[j] == 0 or ylim[j] == -1):
-                    b[i, j] = 1
-
+    a = pair_rankings_matrix(x, xlim)
+    b = pair_rankings_matrix(y, ylim)
 
     S = _np.sum(a * b)
     var = (4 / (num * (num - 1) * (num - 2))) * \
