@@ -104,24 +104,36 @@ length."
     num = len(arr)
     pair_ranks = _np.zeros((num, num))
 
-    for i in range(num):
-        # set flags for ith value definitely greater than other values
-        ilimflag = lims[i] == 0 or lims[i] == -1
-        gtrthan = arr[i] > arr
-        def_gtrthan = _np.logical_or(lims == 0,
-                                     lims == 1)
-        pair_ranks[i, gtrthan & ilimflag & def_gtrthan] = -1
+    #broadcast array into two matrices for element wise comparison
+    arr_j = _np.tile(arr, (num,1))
+    arr_i = _np.transpose(arr_j)
+    
+    #broadcast limits into two matrices for element wise boolean operation
+    lim_j = _np.tile(lims, (num,1))
+    lim_i = _np.transpose(lim_j)
+    
+    #(lim[i] == 0 or lim[i] == -1) and ((lim[j] == 0 or lim[j] == 1))
+    lim_j_gtr = _np.logical_or(lim_j == 1,
+                               lim_j == 0)
+    lim_i_gtr = _np.logical_or(lim_i == -1,
+                               lim_i == 0)
+    lim_gtr = _np.logical_and(lim_j_gtr,
+                              lim_i_gtr)
+    
+    #(lim[i] == 0 or lim[i] == 1) and ((lim[j] == 0 or lim[j] == -1))
+    lim_j_ls = _np.logical_or(lim_j == -1,
+                              lim_j == 0)
+    lim_i_ls = _np.logical_or(lim_i == 1,
+                              lim_i == 0)
+    lim_ls = _np.logical_and(lim_j_ls,
+                             lim_i_ls)
+    
+    pair_ranks[(arr_i > arr_j) & lim_gtr] = -1 #arr[i] definitely > arr[j]
+    pair_ranks[(arr_i < arr_j) & lim_ls] = 1 #arr[i] definitely < arr[j]
 
-        # set flags for ith value definiteily less than other values
-        ilimflag = lims[i] == 0 or lims[i] == 1
-        lssthan = arr[i] < arr
-        def_lssthan = _np.logical_or(lims == 0,
-                                     lims == -1)
-        pair_ranks[i, lssthan & ilimflag & def_lssthan] = 1
-
-        # if neither of the above 2 criteria are met, then the values are
-        # either equal or cannot be determined to be greater or less than
-        # so we can leave them equal to zero in the rank matrix
+    # if neither of the above 2 criteria are met, then the values are
+    # either equal or cannot be determined to be greater or less than
+    # so we can leave them equal to zero in the rank matrix
 
     return pair_ranks
 
@@ -157,15 +169,10 @@ def kendall_IFN86(x, y,
     Note that both x and y can be censored.
     """
 
-    #TODO: vectorize this function, very slow
-
     validate_inputs(x, y, xlim, ylim)
 
     num = len(x)
     #set up pair counters
-    a = _np.zeros((num, num))
-    b = _np.zeros((num, num))
-
     a = pair_rankings(x, xlim)
     b = pair_rankings(y, ylim)
 
