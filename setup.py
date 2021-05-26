@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pymccorrelation",
-    version="0.2.3",
+    version="0.2.4",
     author="George C. Privon",
     author_email="gprivon@nrao.edu",
     description="Compute correlation coefficients with uncertainties",
