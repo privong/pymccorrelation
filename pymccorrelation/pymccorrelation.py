@@ -9,7 +9,7 @@ Kendall tau implementation follow Isobe, Feigelson & Nelson (1986) method for
 calculating the correlation coefficient with uncertainties on censored data
 (upper/lowerlimit).
 
-Copyright 2019-2020 George C. Privon, Yiqing Song
+Copyright 2019-2021 George C. Privon, Yiqing Song
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-__version__ = '0.2.3'
+__version__ = '0.2.4'
 
 import numpy as _np
 import scipy.stats as _st
@@ -274,6 +274,17 @@ normal " + coeff + " output.")
         for i in range(Nboot):
             xp = x[members[i, :]]
             yp = y[members[i, :]]
+
+            # if limit flag arrays are provided, resample these to match
+            if xlim is not None:
+                xlimb = xlim[members[i, :]]
+            else:
+                xlimb = xlim
+            if ylim is not None:
+                ylimb = ylim[members[i, :]]
+            else:
+                ylimb = ylim
+
             if Nperturb is not None:
                 # perform 1 perturbation on top of the bootstrapping
                 xp = x.copy()
@@ -285,7 +296,7 @@ normal " + coeff + " output.")
                                                         Nperturb=1)
 
             coeffs[i], pvals[i] = compute_corr(xp, yp,
-                                               xlim=xlim, ylim=ylim,
+                                               xlim=xlimb, ylim=ylimb,
                                                coeff=coeff)
 
     elif Nperturb is not None:

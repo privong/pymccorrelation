@@ -2,6 +2,12 @@
 
 ## 0.2.x
 
+### 0.2.4 (26 May 2021)
+
+#### Bugfixes
+
+- When computing Kendall's tau with censored data and bootstrapping, the x/y limit flags were not resampled. This is fixed and the limit flags are now properly resampled.
+
 ### 0.2.3 (25 August 2020)
 
 #### Enhancements
