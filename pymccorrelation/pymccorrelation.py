@@ -9,7 +9,7 @@ Kendall tau implementation follow Isobe, Feigelson & Nelson (1986) method for
 calculating the correlation coefficient with uncertainties on censored data
 (upper/lowerlimit).
 
-Copyright 2019-2021 George C. Privon, Yiqing Song
+Copyright 2019-2022 George C. Privon, Yiqing Song
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -265,6 +265,13 @@ normal " + coeff + " output.")
                           dtype=bool)
 
     if Nboot is not None:
+        if Nboot == 1:
+            _warnings.warn("You have requested a single resampling of the data. ")
+        if Nperturb is not None and Nperturb > 1:
+            _warnings.warn("When Nboot >=1, only a single point perturbation \
+is applied to each bootstrap sampling. If you want to estimate uncertainties \
+for the coefficient and p-value only using multiple perturbations derived from \
+the measurement uncertanties, set `Nboot=None`.")
         coeffs = _np.zeros(Nboot)
         pvals = _np.zeros(Nboot)
         rng = _np.random.default_rng()
