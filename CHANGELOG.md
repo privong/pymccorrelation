@@ -2,11 +2,12 @@
 
 ## 0.2.x
 
-### 0.2.5 (in preparation)
+### 0.2.5 (28 September 2022)
 
 #### Other
 
 - `pymckendall()` is deprecated and will be removed after the 0.3.x series.
+- Added a warning when `Nboot=1`. A user may provide this, intending to compute the correlation coefficient using many `Nperturb` rounds on the original dataset. However, `Nboot=1` does not use the input dataset as-is, but instead performs a single bootstrap with replacement. The warning clarifies that `Nboot=None` is the appropriate input when seeking to only use perturbation of points within the uncertainties.
 
 ### 0.2.4 (26 May 2021)
 
