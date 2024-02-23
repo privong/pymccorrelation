@@ -2,6 +2,12 @@
 
 ## 0.2.x
 
+### 0.2.6 (23 February 2024)
+
+#### Bugfix
+
+- Fixed a typo in Kendall's tau calculation for censored data that resulted in upper limit flags not being applied when evaluating whether Yi d< Yj (see Eq 27 of Isobe+ 1986, ApJ, 306, 490l). Identified by [Bennett-Skinner](https://github.com/Bennett-Skinner).
+
 ### 0.2.5 (28 September 2022)
 
 #### Other

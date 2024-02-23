@@ -9,7 +9,7 @@ Kendall tau implementation follow Isobe, Feigelson & Nelson (1986) method for
 calculating the correlation coefficient with uncertainties on censored data
 (upper/lowerlimit).
 
-Copyright 2019-2022 George C. Privon, Yiqing Song
+Copyright 2024 George C. Privon, Yiqing Song
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -148,7 +148,7 @@ def kendall_IFN86(x, y,
                 if (ylim[i] == 0 or ylim[i] == -1) and (ylim[j] == 0 or ylim[j] == 1):
                     b[i, j] = -1
             else:
-                if (ylim[i] == 0 or ylim[i] == 0) and (ylim[j] == 0 or ylim[j] == -1):
+                if (ylim[i] == 0 or ylim[i] == 1) and (ylim[j] == 0 or ylim[j] == -1):
                     b[i, j] = 1
 
 
