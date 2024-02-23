@@ -70,7 +70,7 @@ If you use this script as part of your research, I encourage you to cite the fol
 * [Curran 2014](https://arxiv.org/abs/1411.3816): Describes the technique and application to Spearman's rank correlation coefficient
 * [Privon+ 2020](https://ui.adsabs.harvard.edu/abs/2020ApJ...893..149P/abstract): First use of this software, as `pymcspearman`.
 
-Please also [cite scipy and numpy](https://www.scipy.org/citing.html).
+Please also cite [scipy](https://scipy.org/citing-scipy/) and [numpy](https://numpy.org/citing-numpy/).
 
 
 If your work uses Kendall's tau with censored data please also cite:
