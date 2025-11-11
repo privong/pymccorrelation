@@ -33,6 +33,7 @@ import scipy.stats as _st
 from scipy.stats import pearsonr as _pearsonr
 from scipy.stats import spearmanr as _spearmanr
 from scipy.stats import kendalltau as _kendalltau
+from scipy.special import binom as _binom
 
 _warnings.simplefilter('default')
 
@@ -225,6 +226,23 @@ def pymccorrelation(x, y,
         raise ValueError("dx and x must be the same length.")
     if dy is not None and len(dy) != len(y):
         raise ValueError("dx and x must be the same length.")
+
+    # warn the user if the number of bootstraps is comparable (> 10%) of the
+    # number of possible permutations of the dataset (with replacement)
+    # In situations like these the probability distributions may not be well
+    # sampled.
+    # Note: the choice of 10% is arbitrary. There is probably a better choice
+    #       in terms of the probability for re-drawing the same set multiple
+    #       times
+    # Note: if perturbation is also used, this is a moot point because each
+    #       round of bootstrap resampling will also draw new values from the
+    #       uncertainty distributions.
+    if (Nboot is not None) and \
+            (Nperturb is None):
+        Nboot_possible = _binom(2 * len(x) - 1,
+                                len(x))
+        if Nboot >= (0.1*Nboot_possible):
+            _warnings.warn("The requested number of bootstraps (Nboot={0:d}) is > 10% of the number of possible bootstrap resamples ({1:1.0f}). Calculated probability distributions may be unreliable.\n".format(Nboot, Nboot_possible))
 
     coeffs_impl = ['spearmanr', 'kendallt', 'pearsonr']
     # make sure an implemented correlation coefficient type is requested

@@ -2,6 +2,12 @@
 
 ## 0.2.x
 
+### 0.2.7 (in progress)
+
+#### Enhancements
+
+- Warn the user about unreliable probability distributions if the number of requested bootstrap iterations is > 10% of the total number of possible resamplings of the input data. This is only checked when no point perturbation is done.
+
 ### 0.2.6 (23 February 2024)
 
 #### Bugfix
