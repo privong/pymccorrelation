@@ -197,21 +197,27 @@ def pymccorrelation(x, y,
     """
     Compute a correlation coefficient with uncertainties using several methods.
     Arguments:
-    x: independent variable array
-    y: dependent variable array
-    dx: uncertainties on independent variable (assumed to be normal)
-    dy: uncertainties on dependent variable (assumed to be normal)
-    xlim: censoring information for independent variable to compute
-        generalized Kendall tau
-        (-1, 1, 0) correspond to (lower limit, upper limit, detection)
-    ylim: censoring information for dependent variable to compute generalized
-        Kendall tau
-        (-1, 1, 0) correspond to (lower limit, upper limit, detection)
-    Nboot: number of times to bootstrap (does not boostrap if =None)
-    Nperturb: number of times to perturb (does not perturb if =None)
-    coeff: Correlation coefficient to compute. Must be one of:
+    x (array_like): independent variable
+    y (array_like): dependent variable (must be same length as `x`)
+    dx (array_like): 1-sigma uncertainty values for independent
+        variable (assumed to be Normally distributed). Must be the same length
+        as `x`
+    dy (array_like): 1-sigma uncertainty values for dependent variable
+        (assumed to be Normally distributed). Must be the same length as `y`
+    xlim (array_like): integer censoring labels for independent variable (only
+        for generalized Kendall tau. Must be the same length as `x`
+        Allowed values are: (-1, 1, 0) corresponding to:
+        (lower limit, upper limit, detection)
+    ylim (array_like): integer censoring labels for dependent variable (only
+        for generalized Kendall tau. Must be the same length as `y`
+        Allowed values are: (-1, 1, 0) corresponding to:
+        (lower limit, upper limit, detection)
+    Nboot (int): number of times to bootstrap (does not boostrap if =None)
+    Nperturb (int): number of times to perturb (does not perturb if =None)
+    coeff (str): Correlation coefficient to compute. Must be one of:
         ['spearmanr', 'kendallt', 'pearsonr']
-    percentiles: list of percentiles to compute from final distribution
+    percentiles (array_like): list of percentiles to compute from
+        final distribution
     return_dist: if True, return the full distribution of the correlation
         coefficient and its and p-value
     """

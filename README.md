@@ -61,7 +61,7 @@ In that case, `res` becomes a tuple of length four:
 * numpy array with full set of correlation coefficient values from the bootstrapping
 * numpy array with the full set of p-values computed from the bootstrapping
 
-Please see the docstring for the full set of arguments and information including measurement uncertainties (necessary for point perturbation) and for marking censored data.
+Please see the docstring for the full set of arguments and information on including measurement uncertainties (necessary for point perturbation) and for marking censored data.
 
 ## Citing
 
